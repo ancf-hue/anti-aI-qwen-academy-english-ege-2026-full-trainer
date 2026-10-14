@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anti-AI Qwen Academy | English EGE-2026</title>
+  <meta name="description" content="Free offline trainer for EGE English 2026: listening, reading, grammar and vocabulary, writing and speaking sections." />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #070b18; --card: rgba(18, 26, 51, 0.72); --card-soft: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.1); --text: #e8ecff; --muted: #9aa4c8;
+      --accent: #22d3ee; --violet: #7c3aed; --green: #22c55e; --red: #ef4444; --orange: #f59e0b;
+    }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top left, rgba(124, 58, 237, 0.22), transparent 30%),
+                  radial-gradient(circle at top right, rgba(34, 211, 238, 0.18), transparent 28%), var(--bg);
+      color: var(--text); line-height: 1.55; min-height: 100vh;
+    }
+    .container { width: min(1120px, 92%); margin: 0 auto; }
+    header {
+      position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px);
+      background: rgba(7, 11, 24, 0.82); border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo {
+      width: 46px; height: 46px; border-radius: 15px; object-fit: cover;
+      background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 12px 30px rgba(34, 211, 238, 0.18); flex: 0 0 auto;
+    }
+    .brand strong { display: block; font-size: 16px; line-height: 1.2; }
+    .brand small { color: var(--muted); font-size: 12px; }
+    nav { display: flex; gap: 18px; flex-wrap: wrap; }
+    nav a { color: #cfd6ff; text-decoration: none; font-weight: 700; font-size: 14px; transition: color 0.2s; }
+    nav a:hover { color: white; }
+
+    /* Top Controls: Lang & Timer */
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .lang-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+    .lang-btn:hover { background: rgba(255, 255, 255, 0.12); }
+    .lang-option { opacity: 0.65; }
+    .lang-option.active { opacity: 1; color: white; }
+    .lang-sep { opacity: 0.45; }
+
+    .timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 6px 8px;
+    }
+    .timer-widget select {
+      background: rgba(7, 11, 24, 0.55);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font: inherit;
+      font-size: 12px;
+      max-width: 160px;
+    }
+    #timerDisplay {
+      font-family: monospace;
+      font-variant-numeric: tabular-nums;
+      font-weight: 900;
+      min-width: 88px;
+      text-align: center;
+      color: white;
+      font-size: 14px;
+    }
+    .timer-btn {
+      border: 0;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 9px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.15s ease;
+    }
+    .timer-btn:hover { background: rgba(255, 255, 255, 0.14); }
+    .timer-widget.warning #timerDisplay { color: var(--orange); }
+    .timer-widget.danger #timerDisplay {
+      color: var(--red);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+
+    .hero { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; padding: 48px 0 28px; align-items: start; }
+    .badge {
+      display: inline-flex; align-items: center; padding: 8px 12px; border-radius: 999px;
+      background: rgba(124, 58, 237, 0.18); border: 1px solid rgba(124, 58, 237, 0.35);
+      color: #d8ccff; font-size: 13px; font-weight: 700;
+    }
+    h1 { font-size: clamp(34px, 5vw, 58px); line-height: 1.05; margin: 16px 0; }
+    h1 .accent { color: var(--accent); }
+    .lead { color: #b8c1e6; max-width: 72ch; font-size: 17px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+    .btn {
+      border: 0; border-radius: 14px; padding: 14px 18px; font-weight: 850; cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      background: linear-gradient(135deg, var(--violet), var(--accent)); color: white;
+      box-shadow: 0 12px 30px rgba(34, 211, 238, 0.18); font-size: 15px;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.secondary { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); color: #eaf0ff; box-shadow: none; }
+    .btn.small { padding: 10px 14px; font-size: 14px; border-radius: 12px; }
+    .btn.check { background: linear-gradient(135deg, var(--green), var(--accent)); }
+    .panel {
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.16), rgba(6, 182, 212, 0.10));
+      border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px; padding: 22px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+    .panel h3 { margin: 0 0 14px; font-size: 20px; }
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+    .metric {
+      background: rgba(7, 11, 24, 0.35); border-radius: 16px; padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08); min-height: 82px;
+    }
+    .metric strong { display: block; font-size: 22px; color: white; margin-bottom: 4px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    progress {
+      width: 100%; height: 10px; border-radius: 999px; overflow: hidden; appearance: none;
+      background: rgba(255, 255, 255, 0.1); border: none; margin-top: 10px;
+    }
+    progress::-webkit-progress-bar { background: rgba(255, 255, 255, 0.1); border-radius: 999px; }
+    progress::-webkit-progress-value { background: linear-gradient(90deg, var(--violet), var(--accent)); border-radius: 999px; }
+    progress::-moz-progress-bar { background: var(--accent); border-radius: 999px; }
+    .note { color: var(--muted); font-size: 13px; margin-top: 12px; }
+    section { padding: 28px 0; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+    h2 { font-size: clamp(26px, 3vw, 36px); margin: 0; line-height: 1.15; }
+    .sub { color: var(--muted); margin: 6px 0 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--card); border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 22px; padding: 20px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+      transition: 0.2s;
+    }
+    .card h3 { margin: 0 0 10px; font-size: 20px; }
+    .card p { color: #b8c1e6; margin: 0 0 16px; }
+    .warn-card { border-color: rgba(245, 158, 11, 0.35); background: linear-gradient(180deg, rgba(245, 158, 11, 0.10), rgba(18, 26, 51, 0.72)); }
+    .danger-card { border-color: rgba(239, 68, 68, 0.35); background: linear-gradient(180deg, rgba(239, 68, 68, 0.10), rgba(18, 26, 51, 0.72)); }
+    .success-card { border-color: rgba(34, 197, 94, 0.35); background: linear-gradient(180deg, rgba(34, 197, 94, 0.10), rgba(18, 26, 51, 0.72)); }
+    .tag {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 850;
+      margin-bottom: 10px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.12); color: #dbe3ff;
+    }
+    .tag.red { background: rgba(239, 68, 68, 0.14); border-color: rgba(239, 68, 68, 0.35); color: #ffd7d7; }
+    .tag.green { background: rgba(34, 197, 94, 0.14); border-color: rgba(34, 197, 94, 0.35); color: #d7ffe6; }
+    .tag.orange { background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.35); color: #fff0cc; }
+    .mini-list { margin: 0; padding-left: 18px; color: #c8d2f5; }
+    .mini-list li { margin: 7px 0; }
+    .filter-bar {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding: 14px;
+      background: var(--card-soft); border: 1px solid var(--border); border-radius: 16px; align-items: center;
+    }
+    .filter-bar span { color: var(--muted); font-size: 13px; font-weight: 700; margin-right: 6px; }
+    .filter-btn {
+      padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06); color: var(--text); cursor: pointer; font-size: 13px; font-weight: 700; transition: 0.15s ease;
+    }
+    .filter-btn:hover { background: rgba(255, 255, 255, 0.1); }
+    .filter-btn.active { background: linear-gradient(135deg, var(--violet), var(--accent)); border-color: transparent; color: white; }
+    .question-block {
+      background: var(--card); border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 24px; padding: 24px; margin-bottom: 26px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+    }
+    .q-number {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      background: rgba(124, 58, 237, 0.22); border: 1px solid rgba(124, 58, 237, 0.45);
+      color: #d8ccff; font-size: 13px; font-weight: 850; margin-bottom: 14px;
+    }
+    .q-number.listen { background: rgba(34, 197, 94, 0.18); border-color: rgba(34, 197, 94, 0.45); color: #d7ffe6; }
+    .q-number.read { background: rgba(245, 158, 11, 0.18); border-color: rgba(245, 158, 11, 0.45); color: #fff0cc; }
+    .q-number.gram { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.45); color: #ffd7d7; }
+    .q-part { margin-bottom: 18px; }
+    .q-part-label { display: inline-block; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); margin-bottom: 8px; }
+    .q-text { font-size: 17px; font-weight: 700; margin: 0; line-height: 1.5; color: #eaf0ff; white-space: pre-wrap; }
+    .q-info {
+      background: rgba(124, 58, 237, 0.10); border-left: 4px solid var(--violet);
+      border-radius: 0 14px 14px 0; padding: 16px 18px; margin: 18px 0; color: #dbe3ff; font-size: 15px; line-height: 1.55; white-space: pre-wrap;
+    }
+    .q-info strong { color: #ffffff; }
+    .q-trainer-label { display: inline-block; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--green); margin-bottom: 10px; }
+    .options { display: grid; gap: 10px; }
+    .option {
+      text-align: left; width: 100%; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text); border-radius: 14px; padding: 14px 16px; cursor: pointer; font-size: 15px; transition: 0.15s ease; white-space: pre-wrap;
+    }
+    .option:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); }
+    .option.correct { background: rgba(34, 197, 94, 0.18); border-color: rgba(34, 197, 94, 0.55); }
+    .option.wrong { background: rgba(239, 68, 68, 0.18); border-color: rgba(239, 68, 68, 0.55); }
+    .option:disabled { cursor: default; }
+    .result-block { margin-top: 14px; padding: 14px 16px; border-radius: 14px; }
+    .result-block.correct { background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); }
+    .result-block.wrong { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); }
+    .verdict { font-size: 17px; font-weight: 900; margin-bottom: 8px; }
+    .verdict.correct { color: #22c55e; }
+    .verdict.wrong { color: #ef4444; }
+    .result-row { margin: 6px 0; color: #d7e6ff; font-size: 15px; }
+    .result-row strong { color: #ffffff; }
+    .source-row { margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.18); color: var(--muted); font-size: 13px; }
+    .source-row strong { color: #dbe3ff; }
+    .summary {
+      background: linear-gradient(180deg, rgba(34, 197, 94, 0.14), rgba(18, 26, 51, 0.72));
+      border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 24px; padding: 24px; text-align: center; margin-top: 24px;
+    }
+    .summary .score { font-size: 48px; font-weight: 950; color: #fff; }
+    .reset-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; justify-content: flex-end; }
+    .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+    .check-item {
+      display: flex; gap: 12px; align-items: flex-start; background: var(--card-soft);
+      border: 1px solid var(--border); border-radius: 16px; padding: 14px; transition: 0.15s ease;
+    }
+    .check-item input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--accent); flex: 0 0 auto; }
+    .check-item label { cursor: pointer; color: #dbe3ff; }
+    .check-item.done { opacity: 0.72; background: rgba(34, 211, 238, 0.08); border-color: rgba(34, 211, 238, 0.25); }
+    .check-item.done label { text-decoration: line-through; color: #aab5dc; }
+    .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .day { background: var(--card-soft); border: 1px solid var(--border); border-radius: 18px; padding: 16px; min-height: 112px; }
+    .day b { display: block; color: var(--accent); margin-bottom: 6px; font-size: 14px; letter-spacing: 0.2px; }
+    .day.critical { border-color: rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.08); }
+    .manual-card {
+      background: var(--card); border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 22px; padding: 20px; margin-bottom: 16px; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+    .manual-card h3 { margin: 0 0 10px; font-size: 20px; }
+    .manual-card p { color: #b8c1e6; margin: 8px 0; white-space: pre-wrap; }
+    .answer-hint {
+      margin-top: 10px; padding: 12px 14px; border-radius: 14px;
+      background: rgba(34, 197, 94, 0.10); border: 1px solid rgba(34, 197, 94, 0.28); color: #d7ffe6; font-size: 14px; white-space: pre-wrap;
+    }
+    .check-input { margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255, 255, 255, 0.18); }
+    .check-input label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 8px; font-weight: 700; }
+    .check-input input, .check-input textarea, .answer-input {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06); color: var(--text); font-size: 15px; font-family: inherit;
+    }
+    .check-input textarea { min-height: 120px; resize: vertical; }
+    .check-input input:focus, .check-input textarea:focus, .answer-input:focus {
+      outline: none; border-color: var(--accent); background: rgba(34, 211, 238, 0.06);
+    }
+    .char-counter { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: right; font-family: monospace; }
+    .input-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+    .input-row .answer-input { flex: 1; min-width: 220px; }
+    .answer-input.sequence { font-family: monospace; letter-spacing: 1px; }
+
+    .support-card {
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.18), rgba(34, 211, 238, 0.10));
+      border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 24px; padding: 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+    .support-card h2 { margin-bottom: 10px; }
+    .support-card p { margin: 10px 0; color: #dbe3ff; }
+    .phone { color: white; font-weight: 900; text-decoration: none; border-bottom: 1px dashed rgba(255, 255, 255, 0.45); }
+    .phone:hover { color: var(--accent); }
+    .copy-status { margin-left: 8px; color: var(--green); font-weight: 850; }
+    .support-card a { color: var(--accent); font-weight: 800; text-decoration: none; }
+    .support-card a:hover { text-decoration: underline; }
+    footer { padding: 30px 0 50px; color: var(--muted); text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.08); margin-top: 30px; }
+
+    .audio-section {
+      background: linear-gradient(180deg, rgba(34, 211, 238, 0.10), rgba(18, 26, 51, 0.72));
+      border: 1px solid rgba(34, 211, 238, 0.4); border-radius: 24px; padding: 22px 24px;
+      margin-bottom: 26px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+    }
+    .audio-section.violet {
+      background: linear-gradient(180deg, rgba(124, 58, 237, 0.14), rgba(18, 26, 51, 0.72));
+      border-color: rgba(124, 58, 237, 0.5);
+    }
+    .audio-section-tag {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      background: rgba(34, 211, 238, 0.18); border: 1px solid rgba(34, 211, 238, 0.5);
+      color: #cdeeff; font-size: 12px; font-weight: 850; margin-bottom: 10px;
+    }
+    .audio-section.violet .audio-section-tag {
+      background: rgba(124, 58, 237, 0.22); border-color: rgba(124, 58, 237, 0.55); color: #d8ccff;
+    }
+    .audio-section-title { margin: 0 0 8px; font-size: 20px; color: #ffffff; }
+    .audio-section-note { margin: 0; color: #cdeeff; font-size: 14px; line-height: 1.6; }
+    .audio-section.violet .audio-section-note { color: #d8ccff; }
+    .audio-section-note strong { color: #ffffff; }
+    .audio-section-note code {
+      background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 6px;
+      color: #ffffff; font-family: monospace; font-size: 13px;
+    }
+    .audio-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+    .q-audio { margin: 14px 0; padding: 14px; background: rgba(34, 211, 238, 0.08); border: 1px solid rgba(34, 211, 238, 0.35); border-radius: 14px; }
+    .audio-section.violet .q-audio { background: rgba(124, 58, 237, 0.10); border-color: rgba(124, 58, 237, 0.4); }
+    .q-audio audio { width: 100%; display: block; }
+    .audio-error { color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 14px; display: none; }
+    .audio-error code { background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+
+    .details-box {
+      background: var(--card-soft); border: 1px solid var(--border); border-radius: 16px;
+      padding: 14px 16px; margin: 12px 0;
+    }
+    details summary { cursor: pointer; font-weight: 850; color: var(--accent); outline: none; }
+    details[open] summary { margin-bottom: 10px; }
+    .text-body { color: #dbe3ff; white-space: pre-wrap; font-size: 15px; line-height: 1.65; }
+
+    .lex-card { cursor: pointer; text-align: center; transition: 0.25s; }
+    .lex-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .lex-en { font-size: 24px; color: #fff; font-weight: 850; margin-bottom: 6px; }
+    .lex-ru { color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+    .lex-hidden { display: none; color: #cbe7ff; font-size: 14px; margin-top: 8px; }
+    .speak-btn {
+      background: none; border: 1px solid var(--accent); color: var(--accent); border-radius: 50%;
+      width: 34px; height: 34px; cursor: pointer; margin-top: 8px; font-size: 16px; transition: 0.2s;
+    }
+    .speak-btn:hover { background: var(--accent); color: var(--bg); }
+
+    table.data-table { width: 100%; border-collapse: collapse; margin: 12px 0; color: #dbe3ff; }
+    table.data-table th, table.data-table td { border: 1px solid var(--border); padding: 10px; text-align: left; vertical-align: top; }
+    table.data-table th { background: rgba(255,255,255,0.06); color: #fff; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: 1fr; }
+      nav { gap: 12px; }
+      .top-controls { width: 100%; justify-content: space-between; }
+      .timer-widget select { max-width: 120px; }
+    }
+    @media (max-width: 600px) {
+      .topbar { flex-direction: column; align-items: flex-start; }
+      nav { width: 100%; overflow-x: auto; padding-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container topbar">
+      <div class="brand">
+        <img src="favicon.ico" class="brand-logo" alt="Logo" onerror="this.style.display='none'" />
+        <div>
+          <strong data-i18n="brandTitle">Anti-AI Qwen Academy</strong>
+          <small data-i18n="brandSub">Free EGE-2026 Projects</small>
+        </div>
+      </div>
+      
+      <nav>
+        <a href="#structure" data-i18n="navStructure">Structure</a>
+        <a href="#lexique" data-i18n="navLexique">Vocabulary</a>
+        <a href="#pieges" data-i18n="navTraps">Traps</a>
+        <a href="#texts" data-i18n="navTexts">Texts</a>
+        <a href="#trainer" data-i18n="navTrainer">Trainer</a>
+        <a href="#writing" data-i18n="navWriting">Writing</a>
+        <a href="#speaking" data-i18n="navSpeaking">Speaking</a>
+        <a href="#checklist" data-i18n="navChecklist">Checklist</a>
+        <a href="#plan" data-i18n="navPlan">25 Days</a>
+        <a href="#support" data-i18n="navSupport">Support</a>
+      </nav>
+
+      <div class="top-controls">
+        <button id="langToggle" class="lang-btn" type="button" aria-label="Switch Language">
+          <span class="lang-option" data-lang="ru">RU</span>
+          <span class="lang-sep">/</span>
+          <span class="lang-option active" data-lang="en">EN</span>
+        </button>
+
+        <div class="timer-widget" id="timerWidget" role="group" aria-label="Exam Timer">
+          <select id="timerPreset" aria-label="Timer Preset"></select>
+          <span id="timerDisplay">03:10:00</span>
+          <button id="timerToggle" class="timer-btn" type="button">▶</button>
+          <button id="timerReset" class="timer-btn" type="button">↺</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="badge" data-i18n="badge">Free • HTML • English EGE-2026</span>
+        <h1 data-i18n="h1">Help you pass <span class="accent">English EGE</span> correctly</h1>
+        <p class="lead" data-i18n="lead">
+          Full trainer: supports official <strong>audio-en.mp3</strong> for written part
+          and <strong>audio-en-oral.mp3</strong> for oral task 3, plus backup educational voiceover.
+          Reading, grammar and vocabulary, writing with word count, speaking section,
+          checklist and preparation plan. Written part — 38 tasks, 190 minutes. Oral — 4 tasks.
+        </p>
+        <div class="actions">
+          <button class="btn" onclick="scrollToId('trainer')" data-i18n="actionTrainer">Take the trainer</button>
+          <button class="btn secondary" onclick="scrollToId('writing')" data-i18n="actionWriting">Writing Section</button>
+          <button class="btn secondary" onclick="scrollToId('speaking')" data-i18n="actionSpeaking">Speaking Section</button>
+        </div>
+      </div>
+      <aside class="panel">
+        <h3 data-i18n="quickStats">Quick Stats</h3>
+        <div class="metrics">
+          <div class="metric"><strong id="answeredCount">0/36</strong><span data-i18n="metricAnswered">tasks completed</span></div>
+          <div class="metric"><strong id="correctCount">0</strong><span data-i18n="metricCorrect">correct answers</span></div>
+          <div class="metric"><strong id="checklistProgress">0%</strong><span data-i18n="metricChecklist">checklist</span></div>
+        </div>
+        <progress id="overall" value="0" max="100"></progress>
+        <p class="note" data-i18n="noteReset">Answers, drafts and checklist reset each time the page is opened.</p>
+      </aside>
+    </section>
+
+    <section id="structure">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="structureTitle">English EGE Structure</h2>
+          <p class="sub" data-i18n="structureSub">Written part — 38 tasks, 190 minutes. Oral part — 4 tasks.</p>
+        </div>
+      </div>
+      <div class="grid">
+        <article class="card warn-card">
+          <span class="tag orange" data-i18n="structSec1Tag">Section 1</span>
+          <h3 data-i18n="structSec1Title">Listening (1–9)</h3>
+          <ul class="mini-list">
+            <li data-i18n="structSec1L1">Task 1 — 6 speakers, match 1–7 (one extra).</li>
+            <li data-i18n="structSec1L2">Task 2 — dialogue, True / False / Not stated.</li>
+            <li data-i18n="structSec1L3">Tasks 3–9 — interview, choose from 3 options.</li>
+            <li data-i18n="structSec1L4">Audio: <code>audio-en.mp3</code>.</li>
+          </ul>
+        </article>
+        <article class="card warn-card">
+          <span class="tag orange" data-i18n="structSec2Tag">Section 2</span>
+          <h3 data-i18n="structSec2Title">Reading (10–18)</h3>
+          <ul class="mini-list">
+            <li data-i18n="structSec2L1">Task 10 — texts A–G and headings 1–8.</li>
+            <li data-i18n="structSec2L2">Task 11 — gaps A–F, parts 1–7.</li>
+            <li data-i18n="structSec2L3">Tasks 12–18 — text comprehension, 4 options.</li>
+          </ul>
+        </article>
+        <article class="card danger-card">
+          <span class="tag red" data-i18n="structSec3Tag">Section 3</span>
+          <h3 data-i18n="structSec3Title">Grammar & Vocabulary (19–36)</h3>
+          <ul class="mini-list">
+            <li data-i18n="structSec3L1">19–24 — grammatical forms (manual input).</li>
+            <li data-i18n="structSec3L2">25–29 — word formation (manual input).</li>
+            <li data-i18n="structSec3L3">30–36 — vocabulary in text, choose 1–4.</li>
+          </ul>
+        </article>
+        <article class="card success-card">
+          <span class="tag green" data-i18n="structSec4Tag">Section 4</span>
+          <h3 data-i18n="structSec4Title">Writing (37–38)</h3>
+          <ul class="mini-list">
+            <li data-i18n="structSec4L1">37 — email to friend, 100–140 words.</li>
+            <li data-i18n="structSec4L2">38.1 — table analysis, 200–250 words.</li>
+            <li data-i18n="structSec4L3">38.2 — chart analysis, 200–250 words.</li>
+          </ul>
+        </article>
+        <article class="card success-card">
+          <span class="tag green" data-i18n="structOralTag">Oral Part</span>
+          <h3 data-i18n="structOralTitle">Speaking (1–4)</h3>
+          <ul class="mini-list">
+            <li data-i18n="structOralL1">1 — reading aloud.</li>
+            <li data-i18n="structOralL2">2 — 4 questions based on ad.</li>
+            <li data-i18n="structOralL3">3 — interview: <code>audio-en-oral.mp3</code>.</li>
+            <li data-i18n="structOralL4">4 — project presentation with 2 photos.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="lexique">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="lexTitle">Vocabulary Cards</h2>
+          <p class="sub" data-i18n="lexSub">Click card to see example. Click 🔊 for English pronunciation.</p>
+        </div>
+        <input type="text" id="lexSearch" placeholder="Search by English, Russian or example..."
+               style="padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--card-soft); color: var(--text); width: min(320px, 100%); font-size: 14px;"
+               oninput="filterLexique(this.value)" />
+      </div>
+      <div id="lexiqueContainer" class="grid"></div>
+    </section>
+
+    <section id="pieges">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="trapsTitle">Grammar Traps</h2>
+          <p class="sub" data-i18n="trapsSub">Typical mistakes in tasks 19–36 and writing.</p>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="card warn-card">
+          <h3>Present Perfect vs Past Simple</h3>
+          <p><strong>Present Perfect:</strong> action connected to present, no specific time.<br>
+          <strong>Past Simple:</strong> action finished, specific time mentioned.</p>
+          <div class="q-info">I <strong>have visited</strong> London three times.<br>
+          I <strong>visited</strong> London in 2020.</div>
+        </div>
+        <div class="card danger-card">
+          <h3>say / tell / speak / talk</h3>
+          <p><strong>say:</strong> without listener (say something).<br>
+          <strong>tell:</strong> with listener (tell someone).<br>
+          <strong>speak:</strong> language, formal speech.<br>
+          <strong>talk:</strong> conversation, chat.</p>
+          <div class="q-info">She <strong>said</strong> she was tired.<br>
+          He <strong>told</strong> me the truth.<br>
+          I <strong>speak</strong> English and Russian.</div>
+        </div>
+        <div class="card success-card">
+          <h3>Conditionals I / II / III</h3>
+          <p><strong>I:</strong> real condition in future.<br>
+          <strong>II:</strong> unreal condition in present.<br>
+          <strong>III:</strong> unreal condition in past.</p>
+          <div class="q-info">If it <strong>rains</strong>, I <strong>will stay</strong> home.<br>
+          If I <strong>had</strong> time, I <strong>would help</strong>.<br>
+          If I <strong>had known</strong>, I <strong>would have come</strong>.</div>
+        </div>
+        <div class="card warn-card">
+          <h3>Word formation: -ment, -ness, -tion, -ity, -ful, -less, -able</h3>
+          <p>Suffixes change part of speech. In tasks 25–29 identify required part of speech.</p>
+          <div class="q-info">develop → <strong>development</strong><br>
+          happy → <strong>happiness</strong><br>
+          care → <strong>careful / careless</strong></div>
+        </div>
+        <div class="card success-card">
+          <h3>Phrasal verbs</h3>
+          <p>Often checked in tasks 30–36:</p>
+          <div class="q-info"><strong>give up</strong> — quit<br>
+          <strong>pick up</strong> — collect<br>
+          <strong>put off</strong> — postpone<br>
+          <strong>look after</strong> — care for</div>
+        </div>
+        <div class="card danger-card">
+          <h3>Passive Voice</h3>
+          <p>Formed via <strong>be + V3</strong>. Tense shown by <strong>be</strong>.</p>
+          <div class="q-info">
+            Tea <strong>is drunk</strong> to music.<br>
+            It <strong>was used</strong> for medicine.<br>
+            The museum <strong>was founded</strong> in 1755.
+          </div>
+        </div>
+        <div class="card success-card">
+          <h3>Reported Speech</h3>
+          <p>Tense usually shifts back when reporting.</p>
+          <div class="q-info">
+            He said, “I <strong>am</strong> tired.”<br>
+            He said that he <strong>was</strong> tired.<br><br>
+            She said, “I <strong>have finished</strong>.”<br>
+            She said that she <strong>had finished</strong>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="texts">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="textsTitle">Reading and Grammar Texts</h2>
+          <p class="sub" data-i18n="textsSub">Expand relevant block before doing tasks.</p>
+        </div>
+      </div>
+
+      <!-- Text blocks remain in English as they are source material -->
+      <details class="details-box">
+        <summary data-i18n="txtSum1">Task 10. Texts A–G (Crows)</summary>
+        <div class="text-body">A. Crows are birds known for their intelligence... [Original English Text Retained]</div>
+      </details>
+      <details class="details-box">
+        <summary data-i18n="txtSum2">Task 11. Babies can lip-read languages</summary>
+        <div class="text-body">Can you distinguish between spoken English and French?... [Original English Text Retained]</div>
+      </details>
+      <details class="details-box">
+        <summary data-i18n="txtSum3">Tasks 12–18. Living in a dorm</summary>
+        <div class="text-body">Arriving in a dorm for the first time is a thrilling moment... [Original English Text Retained]</div>
+      </details>
+      <details class="details-box">
+        <summary data-i18n="txtSum4">Tasks 19–24. China tea ceremony</summary>
+        <div class="text-body">China is widely known for its tea and tea ceremony... [Original English Text Retained]</div>
+      </details>
+      <details class="details-box">
+        <summary data-i18n="txtSum5">Tasks 25–29. Moscow State University</summary>
+        <div class="text-body">Moscow State University was founded in 1755... [Original English Text Retained]</div>
+      </details>
+      <details class="details-box">
+        <summary data-i18n="txtSum6">Tasks 30–36. Henry</summary>
+        <div class="text-body">It was impossible for Henry to get to his office... [Original English Text Retained]</div>
+      </details>
+    </section>
+
+    <section id="trainer">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="trainerTitle">Trainer: Written Part</h2>
+          <p class="sub" data-i18n="trainerSub">Tasks 1–36. Use audio above and answer questions.</p>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <span data-i18n="filterShow">Show:</span>
+        <button class="filter-btn active" id="filterAll" onclick="setFilter('all', this)"></button>
+        <button class="filter-btn" id="filterListen" onclick="setFilter('listen', this)"></button>
+        <button class="filter-btn" id="filterRead" onclick="setFilter('read', this)"></button>
+        <button class="filter-btn" id="filterGram" onclick="setFilter('gram', this)"></button>
+        <button class="filter-btn" id="filterWrong" onclick="setFilter('wrong', this)"></button>
+      </div>
+
+      <div class="reset-bar">
+        <button class="btn secondary small" onclick="resetAll()" data-i18n="resetAll">🗑 Reset all progress</button>
+      </div>
+
+      <div id="quizContainer"></div>
+      <div id="summaryBox"></div>
+    </section>
+
+    <section id="writing">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="writingTitle">Writing: Tasks 37–38</h2>
+          <p class="sub" data-i18n="writingSub">Answers written in Sheet No. 2. Word counter updates automatically.</p>
+        </div>
+      </div>
+
+      <article class="manual-card">
+        <span class="tag red" data-i18n="w37Tag">Task 37</span>
+        <h3 data-i18n="w37Title">Email to foreign friend (100–140 words)</h3>
+        <p>You have received an email message from your English-speaking pen-friend Benjamin... [Original Prompt Retained]</p>
+
+        <details class="details-box">
+          <summary data-i18n="w37ModelBtn">Outline and Model Answer</summary>
+          <div class="text-body">Каркас: ... Модель: Hi Benjamin,... [Original Content Retained]</div>
+        </details>
+
+        <div class="check-input">
+          <label data-i18n="draftLabel">Your draft:</label>
+          <textarea class="draft-area" data-task="37" data-min="100" data-max="140" placeholder="Write your email in English..."></textarea>
+          <div class="char-counter" id="counter-37"></div>
+        </div>
+      </article>
+
+      <article class="manual-card">
+        <span class="tag red" data-i18n="w381Tag">Task 38.1</span>
+        <h3 data-i18n="w381Title">Statement based on table (200–250 words)</h3>
+        <p>Imagine that you are doing a project on how Zetlanders help raise awareness about the environment... [Original Prompt Retained]</p>
+        
+        <table class="data-table">
+          <thead>
+            <tr><th>Options</th><th>Number of respondents (%)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Participate in local clean-up events</td><td>37</td></tr>
+            <tr><td>Reduce my own waste</td><td>20</td></tr>
+            <tr><td>Support environmental organisations</td><td>16</td></tr>
+            <tr><td>Educate friends and family</td><td>14</td></tr>
+            <tr><td>Share information online</td><td>13</td></tr>
+          </tbody>
+        </table>
+
+        <details class="details-box">
+          <summary data-i18n="w381ModelBtn">Model Answer 38.1</summary>
+          <div class="text-body">Nowadays, environmental awareness has become one of the most important issues... [Original Content Retained]</div>
+        </details>
+
+        <div class="check-input">
+          <label data-i18n="draftLabel">Your draft:</label>
+          <textarea class="draft-area" data-task="38.1" data-min="200" data-max="250" placeholder="Write your text in English..."></textarea>
+          <div class="char-counter" id="counter-38.1"></div>
+        </div>
+      </article>
+      
+       <article class="manual-card">
+        <span class="tag red" data-i18n="w382Tag">Task 38.2</span>
+        <h3 data-i18n="w382Title">Statement based on chart (200–250 words)</h3>
+        <p>Imagine that you are doing a project on school clubs... [Original Prompt Retained]</p>
+        
+        <div class="answer-hint">
+          <strong data-i18n="importantNote">Important:</strong> PDF chart data not recognized as text. Enter real percentages below if available.
+        </div>
+
+        <div class="check-input">
+          <label data-i18n="chartDataLbl">Chart Data 38.2 (optional):</label>
+          <textarea class="draft-area" data-task="38.2-data" placeholder="Например: 37% — Lack of free time..."></textarea>
+        </div>
+
+        <details class="details-box">
+          <summary data-i18n="w382OutlineBtn">Outline for 38.2</summary>
+          <div class="text-body">Extracurricular activities play an important role... [Original Content Retained]</div>
+        </details>
+
+        <div class="check-input">
+          <label data-i18n="draftLabel">Your draft:</label>
+          <textarea class="draft-area" data-task="38.2" data-min="200" data-max="250" placeholder="Write your text in English..."></textarea>
+          <div class="char-counter" id="counter-38.2"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="speaking">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="speakingTitle">Speaking: Tasks 1–4</h2>
+          <p class="sub" data-i18n="speakingSub">Task 3 designed for file <strong>audio-en-oral.mp3</strong>. If missing, educational voiceover used.</p>
+        </div>
+      </div>
+
+      <article class="manual-card">
+        <span class="tag green" data-i18n="s1Tag">Task 1</span>
+        <h3 data-i18n="s1Title">Reading Aloud</h3>
+        <p>Imagine that you are preparing a project with your friend... [Original Prompt Retained]</p>
+
+        <details class="details-box">
+          <summary data-i18n="s1TextBtn">Text for reading</summary>
+          <div class="text-body" id="oralText1">Acid rain is a serious environmental problem these days... [Original Content Retained]</div>
+        </details>
+
+        <div class="audio-controls">
+          <button class="btn small" onclick="speakText(document.getElementById('oralText1').textContent, 1)">🔊 Listen sample</button>
+          <button class="btn small secondary" onclick="speakText(document.getElementById('oralText1').textContent, 2)">🔊🔊 2 times</button>
+          <button class="btn small secondary" onclick="stopSpeech()">⏹ Stop</button>
+        </div>
+
+        <div class="check-input">
+          <label data-i18n="selfCheckLbl">Mark for self-check:</label>
+          <textarea class="draft-area" data-task="s1" placeholder="Запишите трудные слова, ударения, интонацию..."></textarea>
+        </div>
+      </article>
+
+      <article class="manual-card">
+        <span class="tag green" data-i18n="s2Tag">Task 2</span>
+        <h3 data-i18n="s2Title">Four Questions Based on Ad</h3>
+        <p><strong data-i18n="adLabel">Ad :</strong> Join our roller skating club!</p>
+        <p>You are considering joining the roller skating club... [Original Prompt Retained]</p>
+
+        <div class="answer-hint">
+          <strong data-i18n="modelQs">Question model:</strong>
+1) What is the minimum age to join the club?
+2) Do I need any special clothes for the lessons?
+3) Do you offer roller skates rental?
+4) Do you organise competitions for your members?
+        </div>
+
+        <div class="audio-controls">
+          <button class="btn small" onclick="speakText('Join our roller skating club! What is the minimum age to join the club? Do I need any special clothes for the lessons? Do you offer roller skates rental? Do you organise competitions for your members?', 1)">🔊 Listen model</button>
+        </div>
+
+        <div class="check-input">
+          <label data-i18n="draftLabel">Your draft:</label>
+          <textarea class="draft-area" data-task="s2" placeholder="Write your four questions..."></textarea>
+        </div>
+      </article>
+
+      <article class="manual-card">
+        <span class="tag green" data-i18n="s3Tag">Task 3</span>
+        <h3 data-i18n="s3Title">Interview (audio: <code>audio-en-oral.mp3</code>)</h3>
+        <p>You are going to give an interview. You have to answer five questions... [Original Prompt Retained]</p>
+
+        <div class="audio-section violet" style="margin-top: 16px;">
+          <span class="audio-section-tag">🎧 Speaking Part, Task 3. Interview</span>
+          <h3 class="audio-section-title">Audio recording — <code>audio-en-oral.mp3</code></h3>
+          <p class="audio-section-note">
+            Separate file for oral part. Place next to <code>index.html</code>.
+            If file fails to load, educational text voiceover will be used.
+          </p>
+          <div class="q-audio">
+            <audio id="oralAudio" controls preload="metadata" src="audio-en-oral.mp3"></audio>
+            <div id="oralAudioError" class="audio-error">
+              ⚠️ <strong>File <code>audio-en-oral.mp3</code> failed to load.</strong><br>
+              Check location next to index.html. Educational text version available meanwhile.
+            </div>
+          </div>
+          <div class="audio-controls">
+            <button class="btn small" onclick="playOral()">▶ Play interview</button>
+            <button class="btn small secondary" onclick="toggleOral()">⏯ Pause / Resume</button>
+            <button class="btn small secondary" onclick="stopOral()">⏹ Stop</button>
+          </div>
+        </div>
+
+        <details class="details-box" open>
+          <summary data-i18n="eduVerBtn">Educational Text Version of Interview</summary>
+          <div class="answer-hint">
+            <strong data-i18n="attentionLbl">Attention:</strong> Original questions in PDF not recognized as text. Below — educational questions and model answer.
+            With official <code>audio-en-oral.mp3</code>, use audio.
+          </div>
+          <div class="text-body" id="oralText3">Questions:
+1) How often do you use the Internet? What for?
+... Model: I use the Internet every day... [Original Content Retained]</div>
+        </details>
+
+        <div class="check-input">
+          <label data-i18n="draftLabel">Your draft:</label>
+          <textarea class="draft-area" data-task="s3" placeholder="Write your answers..."></textarea>
+        </div>
+      </article>
+
+      <article class="manual-card">
+        <span class="tag green" data-i18n="s4Tag">Task 4</span>
+        <h3 data-i18n="s4Title">Project Work with Two Photos</h3>
+        <p>Imagine that you and your friend are doing a school project "Seasons"... [Original Prompt Retained]</p>
+
+        <div class="answer-hint">
+          <strong data-i18n="photoNote">Note:</strong> Specific photos in PDF not described in text. Below — educational model for typical photos "autumn park" and "winter scene".
+        </div>
+
+        <details class="details-box">
+          <summary data-i18n="monoModelBtn">Monologue Response Model</summary>
+          <div class="text-body" id="oralText4">Hi! I'm recording this voice message about our project "Seasons"... [Original Content Retained]</div>
+        </details>
+
+        <div class="audio-controls">
+          <button class="btn small" onclick="speakText(document.getElementById('oralText4').textContent, 1)">🔊 Listen model</button>
+        </div>
+
+        <div class="check-input">
+          <label data-i18n="draftLabel">Your draft:</label>
+          <textarea class="draft-area" data-task="s4" placeholder="Write your voice message..."></textarea>
+        </div>
+      </article>
+    </section>
+
+    <section id="checklist">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="checklistTitle">EGE-2026 Preparation Checklist</h2>
+          <p class="sub" data-i18n="checklistSub">Tick completed items — checklist resets on new page opening.</p>
+        </div>
+      </div>
+      <ul class="checklist" id="checklistUl">
+         <!-- Populated by JS -->
+      </ul>
+    </section>
+
+    <section id="plan">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="planTitle">Full 25-Day Course for Grade 11</h2>
+          <p class="sub" data-i18n="planSub">Preparation route according to EGE-2026 English structure.</p>
+        </div>
+      </div>
+      <div class="plan-grid" id="planGrid">
+         <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <section id="support">
+      <div class="support-card">
+        <h2 data-i18n="supportTitle">🤝 SUPPORT THE PROJECT 💙</h2>
+        <p data-i18n="supportP1"><strong>The app is free. It was and will remain free.</strong></p>
+        <p>
+          <span data-i18n="supportPhoneLabel">📱 TRANSFER BY PHONE NUMBER:</span>
+          <a class="phone" href="tel:89202275676">8-920-227-56-76</a>
+          <button class="btn small" onclick="copyPhone()" data-i18n="copyPhone">📋 Copy number</button>
+          <span id="copyStatus" class="copy-status" aria-live="polite"></span>
+        </p>
+        <p data-i18n="supportP3">✅ Money arrives instantly. No commission. Safe.</p>
+        <p>🌟 👉 <a href="https://ancf-hue.github.io/" target="_blank" rel="noopener noreferrer" data-i18n="supportCatalog">Catalog of free offline Anti-AI Shield apps</a>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" data-i18n="footer">
+      Anti-AI Qwen Academy • Free HTML Project • English EGE-2026
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE = {
+      answers: "antiIiKvenEn2026v1Answers",
+      checklist: "antiIiKvenEn2026v1Checklist",
+      shuffle: "antiIiKvenEn2026v1Shuffle",
+      manual: "antiIiKvenEn2026v1Manual"
+    };
+
+    // ============================================================
+    // TRANSLATIONS DICTIONARY
+    // ============================================================
+    const I18N = {
+      en: {
+        docTitle: `Anti-AI Qwen Academy | English EGE-2026`,
+        metaDesc: `Free offline trainer for EGE English 2026: listening, reading, grammar and vocabulary, writing and speaking sections.`,
+        brandTitle: `Anti-AI Qwen Academy`,
+        brandSub: `Free EGE-2026 Projects`,
+        navStructure: `Structure`,
+        navLexique: `Vocabulary`,
+        navTraps: `Traps`,
+        navTexts: `Texts`,
+        navTrainer: `Trainer`,
+        navWriting: `Writing`,
+        navSpeaking: `Speaking`,
+        navChecklist: `Checklist`,
+        navPlan: `25 Days`,
+        navSupport: `Support`,
+        badge: `Free • HTML • English EGE-2026`,
+        h1: `Help you pass <span class="accent">English EGE</span> correctly`,
+        lead: `Full trainer: supports official <strong>audio-en.mp3</strong> for written part and <strong>audio-en-oral.mp3</strong> for oral task 3, plus backup educational voiceover. Reading, grammar and vocabulary, writing with word count, speaking section, checklist and preparation plan. Written part — 38 tasks, 190 minutes. Oral — 4 tasks.`,
+        actionTrainer: `Take the trainer`,
+        actionWriting: `Writing Section`,
+        actionSpeaking: `Speaking Section`,
+        quickStats: `Quick Stats`,
+        metricAnswered: `tasks completed`,
+        metricCorrect: `correct answers`,
+        metricChecklist: `checklist`,
+        noteReset: `Answers, drafts and checklist reset each time the page is opened.`,
+        structureTitle: `English EGE Structure`,
+        structureSub: `Written part — 38 tasks, 190 minutes. Oral part — 4 tasks.`,
+        
+        structSec1Tag: `Section 1`,
+        structSec1Title: `Listening (1–9)`,
+        structSec1L1: `Task 1 — 6 speakers, match 1–7 (one extra).`,
+        structSec1L2: `Task 2 — dialogue, True / False / Not stated.`,
+        structSec1L3: `Tasks 3–9 — interview, choose from 3 options.`,
+        structSec1L4: `Audio: <code>audio-en.mp3</code>.`,
+
+        structSec2Tag: `Section 2`,
+        structSec2Title: `Reading (10–18)`,
+        structSec2L1: `Task 10 — texts A–G and headings 1–8.`,
+        structSec2L2: `Task 11 — gaps A–F, parts 1–7.`,
+        structSec2L3: `Tasks 12–18 — text comprehension, 4 options.`,
+
+        structSec3Tag: `Section 3`,
+        structSec3Title: `Grammar & Vocabulary (19–36)`,
+        structSec3L1: `19–24 — grammatical forms (manual input).`,
+        structSec3L2: `25–29 — word formation (manual input).`,
+        structSec3L3: `30–36 — vocabulary in text, choose 1–4.`,
+
+        structSec4Tag: `Section 4`,
+        structSec4Title: `Writing (37–38)`,
+        structSec4L1: `37 — email to friend, 100–140 words.`,
+        structSec4L2: `38.1 — table analysis, 200–250 words.`,
+        structSec4L3: `38.2 — chart analysis, 200–250 words.`,
+
+        structOralTag: `Oral Part`,
+        structOralTitle: `Speaking (1–4)`,
+        structOralL1: `1 — reading aloud.`,
+        structOralL2: `2 — 4 questions based on ad.`,
+        structOralL3: `3 — interview: <code>audio-en-oral.mp3</code>.`,
+        structOralL4: `4 — project presentation with 2 photos.`,
+
+        lexTitle: `Vocabulary Cards`,
+        lexSub: `Click card to see example. Click 🔊 for English pronunciation.`,
+        
+        trapsTitle: `Grammar Traps`,
+        trapsSub: `Typical mistakes in tasks 19–36 and writing.`,
+
+        textsTitle: `Reading and Grammar Texts`,
+        textsSub: `Expand relevant block before doing tasks.`,
+        txtSum1: `Task 10. Texts A–G (Crows)`,
+        txtSum2: `Task 11. Babies can lip-read languages`,
+        txtSum3: `Tasks 12–18. Living in a dorm`,
+        txtSum4: `Tasks 19–24. China tea ceremony`,
+        txtSum5: `Tasks 25–29. Moscow State University`,
+        txtSum6: `Tasks 30–36. Henry`,
+
+        trainerTitle: `Trainer: Written Part`,
+        trainerSub: `Tasks 1–36. Use audio above and answer questions.`,
+        filterShow: `Show:`,
+        filterAll: `All`,
+        filterListen: `Listening`,
+        filterRead: `Reading`,
+        filterGram: `Grammar`,
+        filterWrong: `Only Errors`,
+        resetAll: `🗑 Reset all progress`,
+
+        writingTitle: `Writing: Tasks 37–38`,
+        writingSub: `Answers written in Sheet No. 2. Word counter updates automatically.`,
+        w37Tag: `Task 37`,
+        w37Title: `Email to foreign friend (100–140 words)`,
+        w37ModelBtn: `Outline and Model Answer`,
+        draftLabel: `Your draft:`,
+        w381Tag: `Task 38.1`,
+        w381Title: `Statement based on table (200–250 words)`,
+        w381ModelBtn: `Model Answer 38.1`,
+        w382Tag: `Task 38.2`,
+        w382Title: `Statement based on chart (200–250 words)`,
+        importantNote: `Important:`,
+        chartDataLbl: `Chart Data 38.2 (optional):`,
+        w382OutlineBtn: `Outline for 38.2`,
+
+        speakingTitle: `Speaking: Tasks 1–4`,
+        speakingSub: `Task 3 designed for file <strong>audio-en-oral.mp3</strong>. If missing, educational voiceover used.`,
+        s1Tag: `Task 1`,
+        s1Title: `Reading Aloud`,
+        s1TextBtn: `Text for reading`,
+        selfCheckLbl: `Mark for self-check:`,
+        s2Tag: `Task 2`,
+        s2Title: `Four Questions Based on Ad`,
+        adLabel: `Ad :`,
+        modelQs: `Question model:`,
+        s3Tag: `Task 3`,
+        s3Title: `Interview (audio: <code>audio-en-oral.mp3</code>)`,
+        eduVerBtn: `Educational Text Version of Interview`,
+        attentionLbl: `Attention:`,
+        s4Tag: `Task 4`,
+        s4Title: `Project Work with Two Photos`,
+        photoNote: `Note:`,
+        monoModelBtn: `Monologue Response Model`,
+
+        checklistTitle: `EGE-2026 Preparation Checklist`,
+        checklistSub: `Tick completed items — checklist resets on new page opening.`,
+        planTitle: `Full 25-Day Course for Grade 11`,
+        planSub: `Preparation route according to EGE-2026 English structure.`,
+        dayPrefix: `Day`,
+
+        supportTitle: `🤝 SUPPORT THE PROJECT 💙`,
+        supportP1: `<strong>The app is free. It was and will remain free.</strong>`,
+        supportPhoneLabel: `📱 TRANSFER BY PHONE NUMBER:`,
+        copyPhone: `📋 Copy number`,
+        copied: `✓ Copied`,
+        supportP3: `✅ Money arrives instantly. No commission. Safe.`,
+        supportCatalog: `Catalog of free offline Anti-AI Shield apps`,
+        footer: `Anti-AI Qwen Academy • Free HTML Project • English EGE-2026`,
+
+        // Quiz Labels
+        qLabel1: `1. Question`,
+        qLabel2: `2. Information`,
+        qLabel3: `3. Trainer — Answer Yourself`,
+        resCorrect: `✅ Correct!`,
+        resWrong: `❌ Wrong.`,
+        resAns: `Correct answer:`,
+        resExp: `Explanation:`,
+        resSrc: `Source:`,
+        sumDone: `Completed:`,
+        sumOf: `of`,
+        sumCorr: `Correct answers:`,
+        sumFin: `Answer all tasks to see final result.`,
+        verExc: `Excellent result! / Well done!`,
+        verGood: `Good, but analyze mistakes. / Analyse your mistakes.`,
+        verNeed: `Need to work through material. / More practice needed.`,
+        confReset: `Reset all answers, drafts and timer?`,
+        errCopy: `Could not copy automatically. Number: `,
+        
+        // Topic Labels
+        topicListen: `Listening`,
+        topicRead: `Reading`,
+        topicGram: `Grammar & Vocab`,
+
+        // Timer Labels
+        timerEn: `English Exam — 190 min`,
+        timerPractice: `Practice — 60 min`,
+        timerUp: `Time is up!`,
+        timerStart: `Start timer`,
+        timerPause: `Pause timer`,
+        timerReset: `Reset timer`
+      },
+      ru: {
+        docTitle: `Анти-ИИ Квен Академия | Английский язык ЕГЭ-2026`,
+        metaDesc: `Бесплатный тренажёр ЕГЭ по английскому языку 2026: аудирование, чтение, грамматика и лексика, письменная и устная часть.`,
+        brandTitle: `Анти-ИИ Квен Академия`,
+        brandSub: `Бесплатные проекты ЕГЭ-2026`,
+        navStructure: `Структура`,
+        navLexique: `Лексика`,
+        navTraps: `Ловушки`,
+        navTexts: `Тексты`,
+        navTrainer: `Тренажёр`,
+        navWriting: `Письмо`,
+        navSpeaking: `Устная часть`,
+        navChecklist: `Чек-лист`,
+        navPlan: `25 дней`,
+        navSupport: `Поддержать`,
+        badge: `Бесплатно • HTML • Английский язык ЕГЭ-2026`,
+        h1: `Поможем сдать <span class="accent">ЕГЭ по английскому</span> правильно`,
+        lead: `Полный тренажёр: поддержка официального <strong>audio-en.mp3</strong> для письменной части и <strong>audio-en-oral.mp3</strong> для устного задания 3, плюс резервная учебная озвучка. Чтение, грамматика и лексика, письменная часть с подсчётом слов, устная часть, чек-лист и план подготовки. Письменная часть — 38 заданий, 190 минут. Устная — 4 задания.`,
+        actionTrainer: `Пройти тренажёр`,
+        actionWriting: `Письменная речь`,
+        actionSpeaking: `Устная часть`,
+        quickStats: `Быстрая статистика`,
+        metricAnswered: `заданий пройдено`,
+        metricCorrect: `правильных ответов`,
+        metricChecklist: `чек-лист`,
+        noteReset: `Ответы, черновики и чек-лист сбрасываются при каждом открытии страницы.`,
+        structureTitle: `Структура ЕГЭ по английскому языку`,
+        structureSub: `Письменная часть — 38 заданий, 190 минут. Устная часть — 4 задания.`,
+        
+        structSec1Tag: `Раздел 1`,
+        structSec1Title: `Аудирование (1–9)`,
+        structSec1L1: `Задание 1 — 6 говорящих, соответствие 1–7 (одно лишнее).`,
+        structSec1L2: `Задание 2 — диалог, True / False / Not stated.`,
+        structSec1L3: `Задания 3–9 — интервью, выбор из 3 вариантов.`,
+        structSec1L4: `Аудио: <code>audio-en.mp3</code>.`,
+
+        structSec2Tag: `Раздел 2`,
+        structSec2Title: `Чтение (10–18)`,
+        structSec2L1: `Задание 10 — тексты A–G и заголовки 1–8.`,
+        structSec2L2: `Задание 11 — пропуски A–F, части 1–7.`,
+        structSec2L3: `Задания 12–18 — понимание текста, 4 варианта.`,
+
+        structSec3Tag: `Раздел 3`,
+        structSec3Title: `Грамматика и лексика (19–36)`,
+        structSec3L1: `19–24 — грамматические формы (ручной ввод).`,
+        structSec3L2: `25–29 — словообразование (ручной ввод).`,
+        structSec3L3: `30–36 — лексика в тексте, выбор 1–4.`,
+
+        structSec4Tag: `Раздел 4`,
+        structSec4Title: `Письменная речь (37–38)`,
+        structSec4L1: `37 — электронное письмо, 100–140 слов.`,
+        structSec4L2: `38.1 — таблица, 200–250 слов.`,
+        structSec4L3: `38.2 — диаграмма, 200–250 слов.`,
+
+        structOralTag: `Устная часть`,
+        structOralTitle: `Говорение (1–4)`,
+        structOralL1: `1 — чтение вслух: Acid rain.`,
+        structOralL2: `2 — вопросы по объявлению: roller skating club.`,
+        structOralL3: `3 — интервью: <code>audio-en-oral.mp3</code>.`,
+        structOralL4: `4 — проект по двум фото: Seasons.`,
+
+        lexTitle: `Лексические карточки`,
+        lexSub: `Нажмите на карточку, чтобы увидеть пример. Нажмите 🔊 для английского произношения.`,
+        
+        trapsTitle: `Лексико-грамматические ловушки`,
+        trapsSub: `Типичные ошибки в заданиях 19–36 и в письменной части.`,
+
+        textsTitle: `Тексты для чтения и грамматики`,
+        textsSub: `Разверните нужный блок перед выполнением заданий.`,
+        txtSum1: `Задание 10. Тексты A–G (Crows)`,
+        txtSum2: `Задание 11. Babies can lip-read languages`,
+        txtSum3: `Задания 12–18. Living in a dorm`,
+        txtSum4: `Задания 19–24. China tea ceremony`,
+        txtSum5: `Задания 25–29. Moscow State University`,
+        txtSum6: `Задания 30–36. Henry`,
+
+        trainerTitle: `Тренажёр: письменная часть`,
+        trainerSub: `Задания 1–36. Используйте аудио выше и отвечайте на вопросы.`,
+        filterShow: `Показать:`,
+        filterAll: `Все`,
+        filterListen: `Аудирование`,
+        filterRead: `Чтение`,
+        filterGram: `Грамматика`,
+        filterWrong: `Только ошибки`,
+        resetAll: `🗑 Сбросить весь прогресс`,
+
+        writingTitle: `Письменная речь: задания 37–38`,
+        writingSub: `Ответы пишутся в бланк № 2. Счётчик слов обновляется автоматически.`,
+        w37Tag: `Задание 37`,
+        w37Title: `Электронное письмо зарубежному другу (100–140 слов)`,
+        w37ModelBtn: `Каркас и модель ответа`,
+        draftLabel: `Твой черновик:`,
+        w381Tag: `Задание 38.1`,
+        w381Title: `Высказывание по таблице (200–250 слов)`,
+        w381ModelBtn: `Модель ответа 38.1`,
+        w382Tag: `Задание 38.2`,
+        w382Title: `Высказывание по диаграмме (200–250 слов)`,
+        importantNote: `Важно:`,
+        chartDataLbl: `Данные диаграммы 38.2 (необязательно):`,
+        w382OutlineBtn: `Каркас для 38.2`,
+
+        speakingTitle: `Устная часть: задания 1–4`,
+        speakingSub: `Задание 3 рассчитано на файл <strong>audio-en-oral.mp3</strong>. Если файла нет, включается учебная текстовая озвучка.`,
+        s1Tag: `Задание 1`,
+        s1Title: `Чтение вслух`,
+        s1TextBtn: `Текст для чтения`,
+        selfCheckLbl: `Отметьте для самопроверки:`,
+        s2Tag: `Задание 2`,
+        s2Title: `Четыре вопроса по объявлению`,
+        adLabel: `Объявление :`,
+        modelQs: `Модель вопросов:`,
+        s3Tag: `Задание 3`,
+        s3Title: `Интервью (аудио: <code>audio-en-oral.mp3</code>)`,
+        eduVerBtn: `Учебная текстовая версия интервью`,
+        attentionLbl: `Внимание:`,
+        s4Tag: `Задание 4`,
+        s4Title: `Проектная работа по двум фотографиям`,
+        photoNote: `Примечание:`,
+        monoModelBtn: `Модель монологического ответа`,
+
+        checklistTitle: `Чек-лист подготовки к ЕГЭ-2026 по английскому`,
+        checklistSub: `Отмечай выполненные пункты — при новом открытии страницы чек-лист сбросится.`,
+        planTitle: `Полный курс 25 дней для 11 класса`,
+        planSub: `Маршрут подготовки по структуре ЕГЭ-2026 по английскому языку.`,
+        dayPrefix: `День`,
+
+        supportTitle: `🤝 ПОДДЕРЖАТЬ ПРОЕКТ 💙`,
+        supportP1: `<strong>Приложение бесплатное. Было и останется.</strong>`,
+        supportPhoneLabel: `📱 ПЕРЕВОД ПО НОМЕРУ ТЕЛЕФОНА:`,
+        copyPhone: `📋 Копировать номер`,
+        copied: `✓ Скопировано`,
+        supportP3: `✅ Деньги придут мгновенно. Без комиссии. Безопасно.`,
+        supportCatalog: `Каталог бесплатных офлайн-приложений Anti-AI Shield`,
+        footer: `Анти-ИИ Квен Академия • Бесплатный HTML-проект • Английский язык ЕГЭ-2026`,
+
+        // Quiz Labels
+        qLabel1: `1. Вопрос`,
+        qLabel2: `2. Информация`,
+        qLabel3: `3. Тренажёр — ответь сам`,
+        resCorrect: `✅ Правильно!`,
+        resWrong: `❌ Неправильно.`,
+        resAns: `Правильный ответ:`,
+        resExp: `Пояснение:`,
+        resSrc: `Источник:`,
+        sumDone: `Пройдено:`,
+        sumOf: `из`,
+        sumCorr: `Правильных ответов:`,
+        sumFin: `Ответь на все задания, чтобы увидеть итог.`,
+        verExc: `Отличный результат! / Excellent!`,
+        verGood: `Хорошо, но разбери ошибки. / Good!`,
+        verNeed: `Нужно проработать материал. / Practice more.`,
+        confReset: `Сбросить все ответы, черновики и таймер?`,
+        errCopy: `Не удалось скопировать автоматически. Номер: `,
+        
+        // Topic Labels
+        topicListen: `Аудирование`,
+        topicRead: `Чтение`,
+        topicGram: `Грамматика и лексика`,
+
+        // Timer Labels
+        timerEn: `Английский экзамен — 190 мин`,
+        timerPractice: `Тренировка — 60 мин`,
+        timerUp: `Время вышло!`,
+        timerStart: `Запустить таймер`,
+        timerPause: `Пауза таймера`,
+        timerReset: `Сброс таймера`
+      }
+    };
+
+    let currentLang = "en";
+
+    function loc(key) {
+      return I18N[currentLang][key] || "";
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+    }
+    function scrollToId(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+
+    function normalizeEnglish(s) {
+      return String(s)
+        .toLowerCase()
+        .replace(/\bcannot\b/g, "can not")
+        .replace(/\bwon't\b/g, "will not")
+        .replace(/\bcan't\b/g, "can not")
+        .replace(/n't\b/g, " not")
+        .replace(/[.,;:!?()"“”‘’'’\[\]{}]/g, "")
+        .replace(/[-–—]/g, "")
+        .replace(/\s+/g, "");
+    }
+
+    function normalizeSearch(s) {
+      return String(s)
+        .toLowerCase()
+        .replace(/[’']/g, "'")
+        .replace(/[.,;:!?()"“”«»\[\]{}]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    /* =========================================================
+       CONFIGURATION — TWO AUDIO FILES
+       ========================================================= */
+    const AUDIO_WRITTEN = "audio-en.mp3";
+    const AUDIO_ORAL = "audio-en-oral.mp3";
+    const EXAM_MINUTES = 190;
+
+    /* =========================================================
+       STATE
+       ========================================================= */
+    let savedAnswers = {};
+    let manualNotes = {};
+    let currentFilter = "all";
+    let timerInterval = null;
+    let timeLeft = EXAM_MINUTES * 60;
+    let enVoice = null;
+    let writtenAudioOK = false;
+    let oralAudioOK = false;
+    let oralTimerInterval = null;
+
+    /* =========================================================
+       VOCABULARY DATABASE
+       ========================================================= */
+    const lexiqueDatabase = [
+      { en: "the environment", ru: "окружающая среда", ex: "We must protect the environment." },
+      { en: "the city", ru: "город", ex: "I live in a big city." },
+      { en: "transport", ru: "транспорт", ex: "Public transport is convenient." },
+      { en: "culture", ru: "культура", ex: "British culture is fascinating." },
+      { en: "education", ru: "образование", ex: "Education changes lives." },
+      { en: "health", ru: "здоровье", ex: "Sport improves your health." },
+      { en: "work", ru: "работа", ex: "I want to find a good job." },
+      { en: "leisure", ru: "досуг", ex: "My leisure activities are reading and music." },
+      { en: "family", ru: "семья", ex: "My family lives in Moscow." },
+      { en: "travel", ru: "путешествие", ex: "We are planning a trip to Europe." },
+      { en: "music", ru: "музыка", ex: "I listen to classical music." },
+      { en: "history", ru: "история", ex: "I love the history of England." },
+      { en: "environmental awareness", ru: "экологическая осведомлённость", ex: "Schools should raise environmental awareness." },
+      { en: "to reduce waste", ru: "сокращать отходы", ex: "We need to reduce our household waste." },
+      { en: "clean-up event", ru: "субботник", ex: "I take part in local clean-up events." },
+      { en: "extracurricular activities", ru: "внеклассные занятия", ex: "Extracurricular activities develop new skills." },
+      { en: "school club", ru: "школьный кружок", ex: "I want to join a school club." },
+      { en: "schedule", ru: "расписание", ex: "The schedule of school clubs is inconvenient." },
+      { en: "ground rules", ru: "основные правила", ex: "Discuss the ground rules with your roommates." },
+      { en: "boundaries", ru: "личные границы", ex: "Respecting boundaries is essential." },
+      { en: "to compromise", ru: "идти на компромисс", ex: "It's important to compromise in shared spaces." },
+      { en: "roommate", ru: "сосед по комнате", ex: "My roommate is very tidy." },
+      { en: "acid rain", ru: "кислотный дождь", ex: "Acid rain damages forests, soil and buildings." },
+      { en: "air pollution", ru: "загрязнение воздуха", ex: "Air pollution is caused by factories and cars." },
+      { en: "fossil fuels", ru: "ископаемое топливо", ex: "People burn fossil fuels to produce energy." },
+      { en: "environmental footprint", ru: "экологический след", ex: "We should consider our environmental footprint." },
+      { en: "sibling", ru: "брат или сестра", ex: "If you have ever shared a room with a sibling, you understand dorm life better." },
+      { en: "chore", ru: "домашняя обязанность", ex: "Assign the chores and keep a chore board." },
+      { en: "to respect boundaries", ru: "уважать личные границы", ex: "It is important to respect boundaries in shared spaces." },
+      { en: "empathy", ru: "эмпатия, сочувствие", ex: "Roommates should have empathy and be cooperative." },
+      { en: "lip-reading", ru: "чтение по губам", ex: "Babies can use lip-reading to distinguish languages." },
+      { en: "native language", ru: "родной язык", ex: "Babies eventually focus on their native language." },
+      { en: "omnivore", ru: "всеядное животное", ex: "Crows are omnivores and eat nearly anything." },
+      { en: "habitat", ru: "среда обитания", ex: "Crows use a mixed habitat, including woodlands and fields." },
+      { en: "to mimic", ru: "подражать, имитировать", ex: "Some crows learn to mimic human speech." },
+      { en: "career ladder", ru: "карьерная лестница", ex: "Shop assistants can move up the career ladder." },
+      { en: "flexible hours", ru: "гибкий график", ex: "Shop assistants can work very flexible hours." },
+      { en: "to set up a business", ru: "открыть свой бизнес", ex: "David is planning to set up his own business." },
+      { en: "to see the world", ru: "посмотреть мир", ex: "He went to Australia mainly to see the world." }
+    ];
+
+    /* =========================================================
+       BACKUP EDUCATIONAL AUDIO SCRIPTS
+       ========================================================= */
+    const listeningScripts = {
+      task1: `Task 1. You will hear six statements.\n\nA. The most valuable thing was learning to work with other people...\nB. If you prove yourself, you can get promotions...\nC. This experience looks good in a CV...\nD. For a teenager, I can't imagine a better first job.\nE. You can combine shifts with your studies...\nF. No two days are the same...`,
+      task2: `Task 2. You will hear a dialogue between Michael and Mrs Lee.\n\nMichael: I have already finished all my exams...\nMrs Lee: Michael, I am glad you came to see me...\nMichael: Yes, Chemistry is interesting...\nMrs Lee: Have you thought about IT?\nMichael: No, I'm not interested in computers at all.\nMrs Lee: Let me give you a few useful tips...\nMichael: Thank you. By the way, will you come to the graduation ball?\nMrs Lee: We haven't decided yet.`,
+      interview: `Task 3. You will hear an interview with David Miles.\n\nInterviewer: What do we learn about you at the beginning of the interview?\nDavid: I work in several different spheres...\nInterviewer: What about your childhood?\nDavid: My grandparents told me lots of tales about China...\nInterviewer: Why did you go to Australia?\nDavid: Mainly to see the world...\nInterviewer: How did you travel across South America?\nDavid: I travelled across South America by bike.\nInterviewer: Something unusual happened once, didn't it?\nDavid: Yes, once I got stuck in a sandstorm in Thailand.\nInterviewer: Do you buy souvenirs while travelling?\nDavid: Yes, I always buy something small...\nInterviewer: What are your future plans?\nDavid: I'm planning to set up my own business.`
+    };
+
+    /* =========================================================
+       QUIZ DATA (Translated Content)
+       ========================================================= */
+    const quizRaw = [
+      {
+        id: 1, task: 1, topic: "listen", type: "sequence", len: 6, correct: "413562",
+        en: {
+          text: `Match speakers A–F with statements 1–7. One statement is extra.`,
+          info: `1. Shop assistants can move up the career ladder.\n2. You won't be bored working as a shop assistant.\n3. Working as a shop assistant may be useful for a future career.\n4. Working as a shop assistant can teach you to work in a team.\n5. The job of a shop assistant is the best option for a teenager.\n6. Shop assistants can work very flexible hours.\n7. Working as a shop assistant can improve communication skills.`,
+          explanation: `A-4, B-1, C-3, D-5, E-6, F-2. Extra: 7.`,
+          source: `Educational script; verify keys with audio-en.mp3`
+        },
+        ru: {
+          text: `Установите соответствие между высказываниями говорящих A–F и утверждениями 1–7. Одно утверждение лишнее.`,
+          info: `1. Shop assistants can move up the career ladder.\n2. You won't be bored working as a shop assistant.\n3. Working as a shop assistant may be useful for a future career.\n4. Working as a shop assistant can teach you to work in a team.\n5. The job of a shop assistant is the best option for a teenager.\n6. Shop assistants can work very flexible hours.\n7. Working as a shop assistant can improve communication skills.`,
+          explanation: `A-4, B-1, C-3, D-5, E-6, F-2. Лишнее: 7.`,
+          source: `Учебный аудиоскрипт; ключи проверить по audio-en.mp3`
+        }
+      },
+      {
+        id: 2, task: 2, topic: "listen", type: "sequence", len: 7, correct: "2312113",
+        en: {
+          text: `Identify which statements A–G correspond to text (1 – True), do not correspond (2 – False), and are not mentioned (3 – Not stated).`,
+          info: `A. Michael is going to have exams soon.\nB. Mrs. Lee is Michael's favourite teacher.\nC. Mrs. Lee is a teacher of Chemistry.\nD. Michael knows exactly what he wants to do after school.\nE. Michael isn't interested in computers.\nF. Mrs. Lee offers Michael a few useful tips.\nG. Mrs. Lee isn't going to attend the graduation ball.`,
+          explanation: `A-2, B-3, C-1, D-2, E-1, F-1, G-3.`,
+          source: `Educational script; verify keys with audio-en.mp3`
+        },
+        ru: {
+          text: `Определите, какие утверждения A–G соответствуют тексту (1 – True), какие не соответствуют (2 – False) и о чём не сказано (3 – Not stated).`,
+          info: `A. Michael is going to have exams soon.\nB. Mrs. Lee is Michael's favourite teacher.\nC. Mrs. Lee is a teacher of Chemistry.\nD. Michael knows exactly what he wants to do after school.\nE. Michael isn't interested in computers.\nF. Mrs. Lee offers Michael a few useful tips.\nG. Mrs. Lee isn't going to attend the graduation ball.`,
+          explanation: `A-2, B-3, C-1, D-2, E-1, F-1, G-3.`,
+          source: `Учебный аудиоскрипт; ключи проверить по audio-en.mp3`
+        }
+      },
+      {
+        id: 3, task: 3, topic: "listen", type: "mc",
+        en: {
+          text: `What do we learn about David Miles at the beginning of the interview?`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) He works in several spheres.`, `2) He always has a lot of free time.`, `3) He's internationally famous.`],
+          explanation: `David: «I work in several different spheres». Option 1.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `What do we learn about David Miles at the beginning of the interview?`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) He works in several spheres.`, `2) He always has a lot of free time.`, `3) He's internationally famous.`],
+          explanation: `David: «I work in several different spheres». Вариант 1.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 0
+      },
+      {
+        id: 4, task: 4, topic: "listen", type: "mc",
+        en: {
+          text: `Which of the following is TRUE about David's childhood?`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) He spent most of his time with his parents.`, `2) His grandparents told him tales about China.`, `3) His parents worked for a Chinese corporation.`],
+          explanation: `David: «My grandparents told me tales about China». Option 2.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `Which of the following is TRUE about David's childhood?`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) He spent most of his time with his parents.`, `2) His grandparents told him tales about China.`, `3) His parents worked for a Chinese corporation.`],
+          explanation: `David: «My grandparents told me tales about China». Вариант 2.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 1
+      },
+      {
+        id: 5, task: 5, topic: "listen", type: "mc",
+        en: {
+          text: `David went to Australia to ...`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) win some money.`, `2) study for a year.`, `3) see the world.`],
+          explanation: `David: «mainly to see the world». Option 3.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `David went to Australia to ...`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) win some money.`, `2) study for a year.`, `3) see the world.`],
+          explanation: `David: «mainly to see the world». Вариант 3.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 6, task: 6, topic: "listen", type: "mc",
+        en: {
+          text: `David travelled across South America by ...`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) car.`, `2) train.`, `3) bike.`],
+          explanation: `David: «by bike». Option 3.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `David travelled across South America by ...`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) car.`, `2) train.`, `3) bike.`],
+          explanation: `David: «by bike». Вариант 3.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 7, task: 7, topic: "listen", type: "mc",
+        en: {
+          text: `Once David ...`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) got stuck in a sandstorm in Thailand.`, `2) was bitten by a poisonous snake.`, `3) climbed high in the mountains in Bolivia.`],
+          explanation: `David: «once I got stuck in a sandstorm in Thailand». Option 1.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `Once David ...`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) got stuck in a sandstorm in Thailand.`, `2) was bitten by a poisonous snake.`, `3) climbed high in the mountains in Bolivia.`],
+          explanation: `David: «once I got stuck in a sandstorm in Thailand». Вариант 1.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 0
+      },
+      {
+        id: 8, task: 8, topic: "listen", type: "mc",
+        en: {
+          text: `While travelling, David ...`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) buys something to remember the place by.`, `2) is usually too scared to eat local food.`, `3) chooses big and impressive souvenirs.`],
+          explanation: `David: «I always buy something small to remember the place by». Option 1.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `While travelling, David ...`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) buys something to remember the place by.`, `2) is usually too scared to eat local food.`, `3) chooses big and impressive souvenirs.`],
+          explanation: `David: «I always buy something small to remember the place by». Вариант 1.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 0
+      },
+      {
+        id: 9, task: 9, topic: "listen", type: "mc",
+        en: {
+          text: `David is planning to ...`,
+          info: `Choose 1, 2 or 3.`,
+          options: [`1) continue living in Kenya.`, `2) make a film about Kilimanjaro.`, `3) set up his own business.`],
+          explanation: `David: «I'm planning to set up my own business». Option 3.`,
+          source: `Educational script; key check with audio-en.mp3`
+        },
+        ru: {
+          text: `David is planning to ...`,
+          info: `Выберите 1, 2 или 3.`,
+          options: [`1) continue living in Kenya.`, `2) make a film about Kilimanjaro.`, `3) set up his own business.`],
+          explanation: `David: «I'm planning to set up my own business». Вариант 3.`,
+          source: `Учебный аудиоскрипт; ключ проверить по audio-en.mp3`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 10, task: 10, topic: "read", type: "sequence", len: 7, correct: "5341278",
+        en: {
+          text: `Match texts A–G with headings 1–8. One heading extra.`,
+          info: `1. They are not the same\n2. Can crows talk?\n3. As smart as a crow\n4. Food strategies\n5. Meet the crow!\n6. A variety of species\n7. Avoiding risks\n8. Family life issues`,
+          explanation: `A-5, B-3, C-4, D-1, E-2, F-7, G-8. Extra heading: 6.`,
+          source: `Open variant EGE-2026; key composed from text`
+        },
+        ru: {
+          text: `Установите соответствие между текстами A–G и заголовками 1–8. Один заголовок лишний.`,
+          info: `1. Они не одинаковы\n2. Могут ли вороны говорить?\n3. Умный как ворона\n4. Стратегии питания\n5. Знакомьтесь: ворона!\n6. Разнообразие видов\n7. Избегание рисков\n8. Вопросы семейной жизни`,
+          explanation: `A-5, B-3, C-4, D-1, E-2, F-7, G-8. Лишний заголовок: 6.`,
+          source: `Открытый вариант ЕГЭ-2026; ключ составлен по тексту`
+        }
+      },
+      {
+        id: 11, task: 11, topic: "read", type: "sequence", len: 6, correct: "143562",
+        en: {
+          text: `Fill gaps A–F with sentence parts 1–7. One part extra.`,
+          info: `1. by looking at the movements of their lips\n2. but if they don't keep hearing other languages\n3. when they finally got used to those speakers\n4. by showing 36 English babies silent video clips\n5. when the language was switched to another\n6. but lose it when they are eight months old\n7. but the study shows that everyone uses lip-reading`,
+          explanation: `A-1, B-4, C-3, D-5, E-6, F-2. Extra part: 7.`,
+          source: `Open variant EGE-2026; key composed from text`
+        },
+        ru: {
+          text: `Заполните пропуски A–F частями предложений 1–7. Одна часть лишняя.`,
+          info: `1. глядя на движения их губ\n2. но если они перестают слышать другие языки\n3. когда они наконец привыкли к этим спикерам\n4. показав 36 англоязычным младенцам немые видеоклипы\n5. когда язык был переключен на другой\n6. но теряют эту способность к восьми месяцам\n7. но исследование показывает, что все используют чтение по губам`,
+          explanation: `A-1, B-4, C-3, D-5, E-6, F-2. Лишняя часть: 7.`,
+          source: `Открытый вариант ЕГЭ-2026; ключ составлен по тексту`
+        }
+      },
+      {
+        id: 12, task: 12, topic: "read", type: "mc",
+        en: {
+          text: `What experience is an advantage in adapting to a dorm life, according to the author?`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) Taking it as an adventure.`, `2) Having brothers or sisters.`, `3) Staying away from parents.`, `4) Avoiding having expectations.`],
+          explanation: `Author: «If you have ever shared a room with a sibling...». Answer 2.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Какой опыт является преимуществом в адаптации к жизни в общежитии, по мнению автора?`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) Восприятие этого как приключения.`, `2) Наличие братьев или сестер.`, `3) Жизнь отдельно от родителей.`, `4) Отсутствие ожиданий.`],
+          explanation: `Автор: «Если вы когда-нибудь делили комнату с братом или сестрой...». Ответ 2.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 1
+      },
+      {
+        id: 13, task: 13, topic: "read", type: "mc",
+        en: {
+          text: `What is the author's advice about ground rules?`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) Just use dorm policies.`, `2) Sign a written agreement.`, `3) Discuss them with a supervisor.`, `4) Put them in a visible place.`],
+          explanation: `Author: «get a set of rules written or printed out on a wall». Answer 4.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Каков совет автора относительно основных правил?`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) Просто использовать правила общежития.`, `2) Подписать письменное соглашение.`, `3) Обсудить их с руководителем.`, `4) Поместить их в видимом месте.`],
+          explanation: `Автор: «получите набор правил, написанный или распечатанный на стене». Ответ 4.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 3
+      },
+      {
+        id: 14, task: 14, topic: "read", type: "mc",
+        en: {
+          text: `The expression set in stone in «the rules are set in stone» (paragraph 2) is closest in meaning to ...`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) hard to change.`, `2) easy to discuss.`, `3) agreed upon.`, `4) very important.`],
+          explanation: `«Set in stone» — immutable, hard to change. Answer 1.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Выражение set in stone во фразе «правила высечены в камне» (абзац 2) ближе всего по значению к ...`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) трудно изменить.`, `2) легко обсудить.`, `3) согласованы.`, `4) очень важны.`],
+          explanation: `«Set in stone» — неизменный, трудно изменяемый. Ответ 1.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 0
+      },
+      {
+        id: 15, task: 15, topic: "read", type: "mc",
+        en: {
+          text: `That in «That worked for us...» (paragraph 3) most probably refers to ...`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) cleaning up often.`, `2) doing chores in turn.`, `3) dividing the chores.`, `4) defining what «clean» is.`],
+          explanation: `Refers to division of duties. Answer 3.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Слово That в фразе «Это работало для нас...» (абзац 3) скорее всего относится к ...`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) частой уборке.`, `2) выполнению дел по очереди.`, `3) разделению обязанностей.`, `4) определению понятия «чисто».`],
+          explanation: `Речь идет о разделении обязанностей. Ответ 3.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 16, task: 16, topic: "read", type: "mc",
+        en: {
+          text: `Which situation is NOT mentioned as advisable for asking your roommate's permission?`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) Bringing guests over.`, `2) Using common space for long.`, `3) Attending a late-night party.`, `4) Borrowing personal items.`],
+          explanation: `Text mentions organizing parties, not attending. Answer 3.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Какая ситуация НЕ упоминается как рекомендуемая для того, чтобы спросить разрешения соседа по комнате?`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) Привести гостей.`, `2) Долго пользоваться общим пространством.`, `3) Посетить ночную вечеринку.`, `4) Одолжить личные вещи.`],
+          explanation: `В тексте говорится об организации вечеринок, а не посещении. Ответ 3.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 17, task: 17, topic: "read", type: "mc",
+        en: {
+          text: `What does the author think about relationships with roommates?`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) Being friends is not the best option.`, `2) Relationships of trust, empathy and cooperation are important.`, `3) Going out together is a must.`, `4) Choose roommates among people you know.`],
+          explanation: `Author: «respect each other's boundaries, have empathy, and be civil and cooperative». Answer 2.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Что автор думает об отношениях с соседями по комнате?`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) Быть друзьями — не лучший вариант.`, `2) Важны отношения доверия, эмпатии и сотрудничества.`, `3) Обязательно выходить вместе.`, `4) Выбирайте соседей среди знакомых.`],
+          explanation: `Автор: «уважайте границы друг друга, проявляйте эмпатию, будьте вежливы и сотрудничайте». Ответ 2.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 1
+      },
+      {
+        id: 18, task: 18, topic: "read", type: "mc",
+        en: {
+          text: `The main goal of the text is to ...`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) share the author's experience.`, `2) give advice on living with roommates.`, `3) establish ground rules for sharing a room.`, `4) encourage students to live in a dorm.`],
+          explanation: `Text gives advice on co-living. Answer 2.`,
+          source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Главная цель текста — ...`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) поделиться опытом автора.`, `2) дать советы по жизни с соседями по комнате.`, `3) установить основные правила совместного проживания.`, `4) призвать студентов жить в общежитии.`],
+          explanation: `Текст дает советы по совместному проживанию. Ответ 2.`,
+          source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 1
+      },
+      {
+        id: 19, task: 19, topic: "gram", type: "word", accepted: ["was used"],
+        en: {
+          text: `Transform USE:\nInitially, tea 19_____ mainly for medicinal purposes.`,
+          info: `Passive Voice, Past Simple.`, explanation: `was used.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Преобразуйте USE:\nИзначально чай 19_____ преимущественно в медицинских целях.`,
+          info: `Passive Voice, Past Simple.`, explanation: `was used.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 20, task: 20, topic: "gram", type: "word", accepted: ["developed"],
+        en: {
+          text: `Transform DEVELOP:\nOver time, it 20_____ into a sophisticated social and cultural activity.`,
+          info: `Past Simple.`, explanation: `developed.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Преобразуйте DEVELOP:\nСо временем это 20_____ в сложную социальную и культурную деятельность.`,
+          info: `Past Simple.`, explanation: `developed.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 21, task: 21, topic: "gram", type: "word", accepted: ["itself"],
+        en: {
+          text: `Transform ONESELF:\nFor Chinese tea ceremony, everything is important – not only the tea 21_____, but also having the right water and utensils.`,
+          info: `Reflexive pronoun.`, explanation: `itself.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Преобразуйте ONESELF:\nДля китайской чайной церемонии важно всё – не только сам чай 21_____, но и наличие правильной воды и посуды.`,
+          info: `Возвратное местоимение.`, explanation: `itself.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 22, task: 22, topic: "gram", type: "word", accepted: ["does not suit", "doesn't suit"],
+        en: {
+          text: `Transform NOT SUIT:\nTap water 22_____ Chinese tea ceremony – you should get distilled mineral water.`,
+          info: `Present Simple, negative.`, explanation: `does not suit.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Преобразуйте NOT SUIT:\nВодопроводная вода 22_____ китайской чайной церемонии – вам следует взять дистиллированную минеральную воду.`,
+          info: `Present Simple, отрицание.`, explanation: `does not suit.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 23, task: 23, topic: "gram", type: "word", accepted: ["better"],
+        en: {
+          text: `Transform GOOD:\nA teapot should be made of clay, and teacups should be small – the smaller, the 23_____.`,
+          info: `Comparative degree.`, explanation: `better.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Преобразуйте GOOD:\nЧайник должен быть сделан из глины, а чашки должны быть маленькими – чем меньше, тем 23_____.`,
+          info: `Сравнительная степень.`, explanation: `better.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 24, task: 24, topic: "gram", type: "word", accepted: ["is drunk"],
+        en: {
+          text: `Transform DRINK:\nTea 24_____ to soft meditative music which helps a person to reach a peaceful state of mind.`,
+          info: `Passive Voice, Present Simple.`, explanation: `is drunk.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Преобразуйте DRINK:\nЧай 24_____ под мягкую медитативную музыку, которая помогает человеку достичь спокойного состояния ума.`,
+          info: `Passive Voice, Present Simple.`, explanation: `is drunk.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 25, task: 25, topic: "gram", type: "word", accepted: ["building"],
+        en: {
+          text: `Form from BUILD:\nIn the 1940s it got a new 25_____ which we all know and admire.`,
+          info: `Noun.`, explanation: `building.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Образуйте от BUILD:\nВ 1940-х годах оно получило новое 25_____, которое мы все знаем и которым восхищаемся.`,
+          info: `Существительное.`, explanation: `building.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 26, task: 26, topic: "gram", type: "word", accepted: ["varied", "various"],
+        en: {
+          text: `Form from VARY:\nThe university has all the necessary facilities such as a concert hall, a museum, 26_____ administration services, a swimming pool, a canteen, and so on.`,
+          info: `Adjective. Both varied/various acceptable.`, explanation: `varied / various.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Образуйте от VARY:\nУниверситет имеет все необходимые объекты, такие как концертный зал, музей, 26_____ административные услуги, бассейн, столовую и т.д.`,
+          info: `Прилагательное. Допустимы оба варианта: varied / various.`, explanation: `varied / various.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 27, task: 27, topic: "gram", type: "word", accepted: ["naturally"],
+        en: {
+          text: `Form from NATURAL:\n27_____, students of Moscow State University can use the university library too.`,
+          info: `Adverb at start of sentence.`, explanation: `Naturally.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Образуйте от NATURAL:\n27_____, студенты Московского государственного университета могут также пользоваться университетской библиотекой.`,
+          info: `Наречие в начале предложения.`, explanation: `Naturally.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 28, task: 28, topic: "gram", type: "word", accepted: ["collections"],
+        en: {
+          text: `Form from COLLECT:\nIn fact, it has one of the biggest book 28_____ in Russia.`,
+          info: `Plural noun.`, explanation: `collections.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Образуйте от COLLECT:\nНа самом деле, здесь находится одна из самых больших книжных 28_____ в России.`,
+          info: `Существительное во множественном числе.`, explanation: `collections.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 29, task: 29, topic: "gram", type: "word", accepted: ["scientists"],
+        en: {
+          text: `Form from SCIENCE:\nMany outstanding writers and 29_____ of the past and the present once studied there, so Moscow State University is certainly a place many Russian school students dream of.`,
+          info: `Plural noun denoting people.`, explanation: `scientists.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Образуйте от SCIENCE:\nМногие выдающиеся писатели и 29_____ прошлого и настоящего когда-то учились там, поэтому Московский государственный университет, безусловно, место, о котором мечтают многие российские школьники.`,
+          info: `Существительное во множественном числе, обозначающее людей.`, explanation: `scientists.`, source: `Открытый вариант ЕГЭ-2026`
+        }
+      },
+      {
+        id: 30, task: 30, topic: "gram", type: "mc",
+        en: {
+          text: `He couldn't 30_____ a day like that.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) receive`, `2) remind`, `3) remember`, `4) recognize`],
+          explanation: `remember — recall. Answer 3.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Он не мог 30_____ такой день.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) получить`, `2) напомнить`, `3) вспомнить`, `4) узнать`],
+          explanation: `remember — вспоминать. Ответ 3.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 31, task: 31, topic: "gram", type: "mc",
+        en: {
+          text: `... to 31_____ up a few brave travellers.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) seize`, `2) grab`, `3) catch`, `4) pick`],
+          explanation: `pick up — collect/pick up passengers. Answer 4.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `... чтобы 31_____ нескольких смелых путешественников.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) схватить`, `2) хватать`, `3) поймать`, `4) подобрать`],
+          explanation: `pick up — подбирать пассажиров. Ответ 4.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 3
+      },
+      {
+        id: 32, task: 32, topic: "gram", type: "mc",
+        en: {
+          text: `He had given 32_____ after fifteen minutes of waiting.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) up`, `2) of`, `3) out`, `4) off`],
+          explanation: `give up — surrender/quit. Answer 1.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Он сдался 32_____ после пятнадцати минут ожидания.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) вверх (сдался)`, `2) из`, `3) наружу`, `4) прочь`],
+          explanation: `give up — сдаться, прекратить попытку. Ответ 1.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 0
+      },
+      {
+        id: 33, task: 33, topic: "gram", type: "mc",
+        en: {
+          text: `Today he soon 33_____ that the biting wind was brutal.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) realized`, `2) regarded`, `3) remained`, `4) repeated`],
+          explanation: `realized — understood/became aware. Answer 1.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Сегодня он вскоре 33_____, что пронизывающий ветер был жестоким.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) осознал`, `2) считал`, `3) остался`, `4) повторил`],
+          explanation: `realized — осознал, понял. Ответ 1.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 0
+      },
+      {
+        id: 34, task: 34, topic: "gram", type: "mc",
+        en: {
+          text: `A friendly doorman 34_____ him to wait in the lobby.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) approved`, `2) afforded`, `3) allowed`, `4) accepted`],
+          explanation: `allow somebody to do something — permit. Answer 3.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `Дружелюбный швейцар 34_____ ему подождать в вестибюле.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) одобрил`, `2) предоставил средства`, `3) разрешил`, `4) принял`],
+          explanation: `allow somebody to do something — разрешить кому-то сделать что-то. Ответ 3.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 2
+      },
+      {
+        id: 35, task: 35, topic: "gram", type: "mc",
+        en: {
+          text: `... had 35_____ not to go to work at all.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) directed`, `2) depended`, `3) demanded`, `4) decided`],
+          explanation: `decide not to do something — resolve. Answer 4.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `... 35_____ вообще не идти на работу.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) направил`, `2) зависел`, `3) потребовал`, `4) решил`],
+          explanation: `decide not to do something — решить не делать что-то. Ответ 4.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 3
+      },
+      {
+        id: 36, task: 36, topic: "gram", type: "mc",
+        en: {
+          text: `... simply because he loved the store very much, 36_____ often, like today, he didn't have to come.`,
+          info: `Choose 1, 2, 3 or 4.`,
+          options: [`1) until`, `2) though`, `3) because`, `4) despite`],
+          explanation: `though — although/however. Answer 2.`, source: `Open variant EGE-2026`
+        },
+        ru: {
+          text: `... просто потому, что он очень любил магазин, 36_____ часто, как сегодня, ему не нужно было приходить.`,
+          info: `Выберите 1, 2, 3 или 4.`,
+          options: [`1) пока`, `2) хотя`, `3) потому что`, `4) несмотря на`],
+          explanation: `though — хотя, однако. Ответ 2.`, source: `Открытый вариант ЕГЭ-2026`
+        },
+        correctIndex: 1
+      }
+    ];
+
+    // Process Quiz Data for current language
+    let quiz = [];
+
+    function prepareData() {
+      quiz = quizRaw.map(q => ({
+        ...q,
+        text: q[currentLang].text,
+        info: q[currentLang].info,
+        explanation: q[currentLang].explanation,
+        source: q[currentLang].source,
+        options: q[currentLang].options ? [...q[currentLang].options] : [],
+        correct: q.correctIndex !== undefined ? q.correctIndex : (q.currentLang === 'ru' ? q.ruOptions?.indexOf(q.options[q.correct]) : q.enOptions?.indexOf(q.options[q.correct])) 
+      }));
+      
+      // Fix for sequence/word types where options aren't arrays
+      quiz.forEach(item => {
+        if (!item.options.length && item.type !== 'mc') {
+             // Keep original logic for non-MC types handled in render/check
+        }
+      });
+    }
+
+    /* =========================================================
+       SPEECH SYNTHESIS
+       ========================================================= */
+    function refreshVoices() {
+      if (!("speechSynthesis" in window)) return;
+      const voices = speechSynthesis.getVoices();
+      enVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("en")) || null;
+    }
+
+    function speakText(text, repeat = 1) {
+      if (!("speechSynthesis" in window)) { alert("Browser does not support SpeechSynthesis."); return; }
+      speechSynthesis.cancel();
+      let remaining = repeat;
+      function speakOne() {
+        if (remaining <= 0) return;
+        remaining--;
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "en-GB";
+        if (enVoice) u.voice = enVoice;
+        u.rate = 0.92;
+        if (remaining > 0) u.onend = () => setTimeout(speakOne, 700);
+        speechSynthesis.speak(u);
+      }
+      speakOne();
+    }
+
+    function stopSpeech() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+
+    /* =========================================================
+       WRITTEN AUDIO
+       ========================================================= */
+    function getWrittenAudio() { return document.getElementById("mainAudio"); }
+
+    function playWritten() {
+      stopOral();
+      stopSpeech();
+      const audio = getWrittenAudio();
+      if (audio && writtenAudioOK) {
+        audio.currentTime = 0;
+        audio.play().catch(() => { speakText(listeningScripts.task1, 2); });
+      } else {
+        speakText(listeningScripts.task1, 2);
+      }
+    }
+
+    function toggleWritten() {
+      const audio = getWrittenAudio();
+      if (!audio) return;
+      if (audio.paused) audio.play(); else audio.pause();
+    }
+
+    function stopWritten() {
+      const audio = getWrittenAudio();
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+    }
+
+    function setWrittenRate(rate) {
+      const audio = getWrittenAudio();
+      if (audio) audio.playbackRate = rate;
+    }
+
+    /* =========================================================
+       ORAL AUDIO (TASK 3)
+       ========================================================= */
+    function getOralAudio() { return document.getElementById("oralAudio"); }
+
+    function playOral() {
+      stopWritten();
+      stopSpeech();
+      const audio = getOralAudio();
+      if (!audio) return;
+      if (oralAudioOK) {
+        audio.currentTime = 0;
+        audio.play().catch(() => { speakText(document.getElementById("oralText3").textContent, 1); });
+      } else {
+        speakText(document.getElementById("oralText3").textContent, 1);
+      }
+    }
+
+    function toggleOral() {
+      const audio = getOralAudio();
+      if (!audio) return;
+      if (audio.paused) audio.play(); else audio.pause();
+    }
+
+    function stopOral() {
+      const audio = getOralAudio();
+      if (audio) { audio.pause(); audio.currentTime = 0; }
+      stopSpeech();
+    }
+
+    function setOralRate(rate) {
+      const audio = getOralAudio();
+      if (audio) audio.playbackRate = rate;
+    }
+
+    /* =========================================================
+       ORAL TIMERS
+       ========================================================= */
+    function startOralTimer(seconds) {
+      if (oralTimerInterval) clearInterval(oralTimerInterval);
+      let remaining = seconds;
+      const display = document.getElementById("oralTimerDisplay");
+      function tick() {
+        if (!display) return;
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        display.textContent = `⏱ ${m}:${String(s).padStart(2, "0")}`;
+        if (remaining <= 0) {
+          clearInterval(oralTimerInterval);
+          oralTimerInterval = null;
+          alert(loc("timerUp"));
+          return;
+        }
+        remaining--;
+      }
+      tick();
+      oralTimerInterval = setInterval(tick, 1000);
+    }
+
+    function clearOralTimer() {
+      if (oralTimerInterval) clearInterval(oralTimerInterval);
+      oralTimerInterval = null;
+      const d = document.getElementById("oralTimerDisplay");
+      if (d) d.textContent = "⏱ 0:00";
+    }
+
+    /* =========================================================
+       VOCABULARY RENDERING
+       ========================================================= */
+    function renderLexique(list) {
+      const container = document.getElementById("lexiqueContainer");
+      if (!container) return;
+      container.innerHTML = "";
+      list.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card lex-card";
+        card.innerHTML = `
+          <div class="lex-en">${escapeHtml(item.en)}</div>
+          <div class="lex-ru">${escapeHtml(item.ru)}</div>
+          <button class="speak-btn" type="button" title="Listen">🔊</button>
+          <div class="lex-hidden">${escapeHtml(item.ex)}</div>
+        `;
+        const hidden = card.querySelector(".lex-hidden");
+        const speakBtn = card.querySelector(".speak-btn");
+        speakBtn.addEventListener("click", e => { e.stopPropagation(); speakText(item.en + ". " + item.ex, 1); });
+        card.addEventListener("click", () => {
+          const isHidden = hidden.style.display === "none" || hidden.style.display === "";
+          hidden.style.display = isHidden ? "block" : "none";
+          card.style.borderColor = isHidden ? "var(--accent)" : "rgba(255, 255, 255, 0.09)";
+        });
+        container.appendChild(card);
+      });
+    }
+
+    function filterLexique(query) {
+      const q = normalizeSearch(query);
+      renderLexique(lexiqueDatabase.filter(item => {
+        const en = normalizeSearch(item.en);
+        const ru = normalizeSearch(item.ru);
+        const ex = normalizeSearch(item.ex);
+        return en.includes(q) || ru.includes(q) || ex.includes(q);
+      }));
+    }
+
+    /* =========================================================
+       FILTERS AND TIMER
+       ========================================================= */
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      applyFilter();
+    }
+
+    function applyFilter() {
+      quiz.forEach(q => {
+        const block = document.getElementById("q" + q.id);
+        if (!block) return;
+        if (currentFilter === "wrong") {
+          block.style.display = (savedAnswers[q.id] && !savedAnswers[q.id].correct) ? "" : "none";
+        } else {
+          block.style.display = (currentFilter === "all" || q.topic === currentFilter) ? "" : "none";
+        }
+      });
+    }
+
+    function updateFilterLabels() {
+      const c = { listen: 0, read: 0, gram: 0 };
+      quiz.forEach(q => c[q.topic]++);
+      document.getElementById("filterAll").textContent = `${loc("filterAll")} (${quiz.length})`;
+      document.getElementById("filterListen").textContent = `${loc("filterListen")} (${c.listen})`;
+      document.getElementById("filterRead").textContent = `${loc("filterRead")} (${c.read})`;
+      document.getElementById("filterGram").textContent = `${loc("filterGram")} (${c.gram})`;
+      document.getElementById("filterWrong").textContent = loc("filterWrong");
+    }
+    
+    // Timer Logic
+    let timerTotal = 190 * 60; 
+    let timerRemaining = timerTotal;
+    let timerRunning = false;
+
+    function formatTime(sec) {
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return [h, m, s].map(function (v) { return String(v).padStart(2, "0"); }).join(":");
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById("timerDisplay");
+      const widget = document.getElementById("timerWidget");
+      display.textContent = formatTime(timerRemaining);
+      widget.classList.toggle("warning", timerRemaining <= 300 && timerRemaining > 60);
+      widget.classList.toggle("danger", timerRemaining <= 60);
+    }
+
+    function updateTimerButton() {
+      const btn = document.getElementById("timerToggle");
+      btn.textContent = timerRunning ? "⏸" : "▶";
+      btn.setAttribute("title", timerRunning ? loc("timerPause") : loc("timerStart"));
+      btn.setAttribute("aria-label", timerRunning ? loc("timerPause") : loc("timerStart"));
+    }
+
+    function stopTimer() {
+      timerRunning = false;
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+      updateTimerButton();
+    }
+
+    function startTimer() {
+      if (timerRunning || timerRemaining <= 0) return;
+      timerRunning = true;
+      timerInterval = setInterval(function () {
+        if (timerRemaining > 0) {
+          timerRemaining--;
+          updateTimerDisplay();
+        }
+        if (timerRemaining === 0) {
+          stopTimer();
+          alert(loc("timerUp"));
+        }
+      }, 1000);
+      updateTimerButton();
+    }
+
+    function toggleTimer() {
+      if (timerRunning) stopTimer();
+      else startTimer();
+    }
+
+    function resetTimer() {
+      stopTimer();
+      timerRemaining = timerTotal;
+      updateTimerDisplay();
+    }
+
+    function updateTimerLabels() {
+      const preset = document.getElementById("timerPreset");
+      const presets = [
+        { seconds: 190 * 60, key: "timerEn" },
+        { seconds: 60 * 60, key: "timerPractice" }
+      ];
+
+      preset.innerHTML = presets.map(function (p) {
+        return `<option value="${p.seconds}">${escapeHtml(loc(p.key))}</option>`;
+      }).join("");
+
+      const currentValue = parseInt(preset.value, 10);
+      if (!presets.some(p => p.seconds === currentValue)) {
+         preset.value = String(190 * 60);
+         timerTotal = 190 * 60;
+      } else {
+         timerTotal = currentValue;
+      }
+      
+      document.getElementById("timerReset").setAttribute("title", loc("timerReset"));
+      document.getElementById("timerReset").setAttribute("aria-label", loc("timerReset"));
+      updateTimerButton();
+      updateTimerDisplay();
+    }
+
+    /* =========================================================
+       RENDER QUESTIONS
+       ========================================================= */
+    function renderAllQuestions() {
+      const container = document.getElementById("quizContainer");
+      container.innerHTML = "";
+
+      const audioSection = document.createElement("div");
+      audioSection.className = "audio-section";
+      audioSection.innerHTML = `
+        <span class="audio-section-tag">🎧 Section 1. Listening (Tasks 1–9)</span>
+        <h3 class="audio-section-title">Audio recording — <code>${AUDIO_WRITTEN}</code></h3>
+        <p class="audio-section-note">
+          Main file — <strong>${AUDIO_WRITTEN}</strong> (next to index.html).
+          If unavailable, backup educational voiceovers used.
+          On exam recording plays <strong>twice</strong>.
+          <br><br>
+          <strong>Note:</strong> Keys for tasks 1–9 should be verified against official audio.
+          Backup scripts are educational.
+        </p>
+        <div class="q-audio">
+          <audio id="mainAudio" controls preload="metadata" src="${AUDIO_WRITTEN}"></audio>
+          <div id="audioError" class="audio-error">
+            ⚠️ <strong>File ${AUDIO_WRITTEN} failed to load.</strong> Check name and location.
+            Backup educational voiceovers active.
+          </div>
+        </div>
+        <div class="audio-controls">
+          <button class="btn small" onclick="playWritten()">▶ Main Audio / Backup Task 1</button>
+          <button class="btn small secondary" onclick="toggleWritten()">⏯ Pause / Resume</button>
+          <button class="btn small secondary" onclick="stopWritten()">⏹ Stop</button>
+          <button class="btn small secondary" onclick="speakText(listeningScripts.task1, 2)">🔊 Backup: Task 1</button>
+          <button class="btn small secondary" onclick="speakText(listeningScripts.task2, 2)">🔊 Backup: Task 2</button>
+          <button class="btn small secondary" onclick="speakText(listeningScripts.interview, 2)">🔊 Backup: Tasks 3–9</button>
+          <button class="btn small secondary" onclick="setWrittenRate(0.8)">0.8x</button>
+          <button class="btn small secondary" onclick="setWrittenRate(1)">1x</button>
+          <button class="btn small secondary" onclick="setWrittenRate(1.2)">1.2x</button>
+        </div>
+        <details class="details-box">
+          <summary>Backup Educational Audio Scripts Transcript</summary>
+          <div class="text-body" id="reserveTranscript"></div>
+        </details>
+      `;
+      container.appendChild(audioSection);
+
+      const reserve = document.getElementById("reserveTranscript");
+      if (reserve) {
+        reserve.textContent =
+          "Task 1:\n" + listeningScripts.task1 +
+          "\n\nTask 2:\n" + listeningScripts.task2 +
+          "\n\nTasks 3–9:\n" + listeningScripts.interview;
+      }
+
+      const audioEl = document.getElementById("mainAudio");
+      const errorDiv = document.getElementById("audioError");
+      if (audioEl) {
+        if (audioEl.readyState >= 2) { writtenAudioOK = true; if (errorDiv) errorDiv.style.display = "none"; }
+        audioEl.addEventListener("canplaythrough", () => { writtenAudioOK = true; if (errorDiv) errorDiv.style.display = "none"; });
+        audioEl.addEventListener("loadeddata", () => { writtenAudioOK = true; if (errorDiv) errorDiv.style.display = "none"; });
+        audioEl.addEventListener("error", () => { writtenAudioOK = false; if (errorDiv) errorDiv.style.display = "block"; });
+      }
+
+      quiz.forEach(q => {
+        const block = document.createElement("div");
+        block.className = "question-block";
+        block.id = "q" + q.id;
+
+        let controlHtml = "";
+        if (q.type === "mc") {
+          let optionsHtml = "";
+          q.options.forEach((opt, idx) => {
+            optionsHtml += `<button class="option" data-q="${q.id}" data-idx="${idx}" onclick="handleMc(${q.id}, ${idx})">${escapeHtml(opt)}</button>`;
+          });
+          controlHtml = `<div class="options" id="options-${q.id}">${optionsHtml}</div>`;
+        } else if (q.type === "sequence") {
+          controlHtml = `
+            <div class="input-row">
+              <input id="input-${q.id}" class="answer-input sequence" inputmode="numeric" placeholder="Digits only, e.g.: 123456" maxlength="${q.len + 12}" />
+              <button class="btn small check" onclick="checkInput(${q.id})">Check</button>
+            </div>`;
+        } else if (q.type === "word") {
+          controlHtml = `
+            <div class="input-row">
+              <input id="input-${q.id}" class="answer-input" placeholder="Enter word" autocomplete="off" />
+              <button class="btn small check" onclick="checkInput(${q.id})">Check</button>
+            </div>`;
+        }
+
+        let textButtonHtml = "";
+        if (q.topic === "read" || q.topic === "gram") {
+          textButtonHtml = `<div class="audio-controls"><button class="btn small secondary" onclick="scrollToId('texts')">📖 Open Texts</button></div>`;
+        }
+
+        block.innerHTML = `
+          <div class="${q.topic === 'listen' ? 'q-number listen' : q.topic === 'read' ? 'q-number read' : 'q-number gram'}">${escapeHtml(q.topic === 'listen' ? loc('topicListen') : q.topic === 'read' ? loc('topicRead') : loc('topicGram'))}, ${loc('p2Task')} ${q.task}</div>
+          <div class="q-part"><span class="q-part-label">${escapeHtml(loc("qLabel1"))}</span><div class="q-text">${escapeHtml(q.text)}</div></div>
+          <div class="q-info"><span class="q-part-label" style="color:#d8ccff;">${escapeHtml(loc("qLabel2"))}</span><p style="margin:0;">${escapeHtml(q.info)}</p></div>
+          ${textButtonHtml}
+          <div class="q-part"><span class="q-trainer-label">${escapeHtml(loc("qLabel3"))}</span>${controlHtml}</div>
+          <div id="result-${q.id}"></div>
+        `;
+        container.appendChild(block);
+      });
+
+      document.querySelectorAll(".answer-input").forEach(input => {
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            const qId = Number(input.id.replace("input-", ""));
+            checkInput(qId);
+          }
+        });
+      });
+
+      updateFilterLabels();
+      updateStats();
+      applyFilter();
+    }
+
+    /* =========================================================
+       ANSWER HANDLING
+       ========================================================= */
+    function handleMc(qId, selectedIdx) {
+      const q = quiz.find(item => item.id === qId);
+      if (!q || savedAnswers[qId] !== undefined) return;
+      const isCorrect = selectedIdx === q.correct;
+      savedAnswers[qId] = { value: q.options[selectedIdx], correct: isCorrect };
+      const optionsBox = document.getElementById("options-" + q.id);
+      if (optionsBox) {
+        optionsBox.querySelectorAll(".option").forEach(btn => {
+          btn.disabled = true;
+          const idx = Number(btn.dataset.idx);
+          if (idx === q.correct) btn.classList.add("correct");
+          if (idx === selectedIdx && idx !== q.correct) btn.classList.add("wrong");
+        });
+      }
+      showResult(q, q.options[selectedIdx], isCorrect, q.options[q.correct]);
+      updateStats(); updateSummary();
+    }
+
+    function checkInput(qId) {
+      const q = quiz.find(item => item.id === qId);
+      if (!q || savedAnswers[qId] !== undefined) return;
+      const input = document.getElementById("input-" + qId);
+      if (!input) return;
+      const raw = input.value.trim();
+      if (!raw) { alert("Enter answer."); return; }
+      let isCorrect = false, correctDisplay = "";
+      if (q.type === "sequence") {
+        const digits = raw.replace(/\D/g, "");
+        isCorrect = digits === q.correct;
+        correctDisplay = q.correct;
+      } else if (q.type === "word") {
+        const norm = normalizeEnglish(raw);
+        isCorrect = q.accepted.some(a => normalizeEnglish(a) === norm);
+        correctDisplay = q.accepted[0];
+      }
+      savedAnswers[qId] = { value: raw, correct: isCorrect };
+      input.disabled = true;
+      const btn = document.querySelector(`#q${qId} .check`);
+      if (btn) btn.disabled = true;
+      showResult(q, raw, isCorrect, correctDisplay);
+      updateStats(); updateSummary();
+    }
+
+    function showResult(q, selectedValue, isCorrect, correctDisplay) {
+      const resultBox = document.getElementById("result-" + q.id);
+      if (!resultBox) return;
+      const cls = isCorrect ? "correct" : "wrong";
+      const verdictText = isCorrect ? loc("resCorrect") : loc("resWrong");
+      resultBox.innerHTML = `
+        <div class="result-block ${cls}" role="status" aria-live="polite">
+          <div class="verdict ${cls}">${verdictText}</div>
+          <div class="result-row"><strong>${escapeHtml(loc("resAns"))}</strong> ${escapeHtml(correctDisplay)}</div>
+          <div class="result-row"><strong>${escapeHtml(loc("resExp"))}</strong> ${escapeHtml(q.explanation)}</div>
+          <div class="source-row"><strong>${escapeHtml(loc("resSrc"))}</strong> ${escapeHtml(q.source)}</div>
+        </div>`;
+    }
+
+    /* =========================================================
+       STATISTICS
+       ========================================================= */
+    function getChecklistProgress() {
+      const inputs = document.querySelectorAll("#checklistUl input");
+      if (!inputs.length) return 0;
+      let done = 0;
+      inputs.forEach(i => { if (i.checked) done++; });
+      return Math.round((done / inputs.length) * 100);
+    }
+
+    function updateStats() {
+      const total = quiz.length;
+      let answered = 0, correct = 0;
+      const stats = { listen: { c: 0, t: 0 }, read: { c: 0, t: 0 }, gram: { c: 0, t: 0 } };
+      quiz.forEach(q => {
+        stats[q.topic].t++;
+        const saved = savedAnswers[q.id];
+        if (saved) {
+          answered++;
+          if (saved.correct) { correct++; stats[q.topic].c++; }
+        }
+      });
+      document.getElementById("answeredCount").textContent = answered + "/" + total;
+      document.getElementById("correctCount").textContent = correct;
+      document.getElementById("checklistProgress").textContent = getChecklistProgress() + "%";
+      document.getElementById("overall").value = Math.round(((answered / total) * 100 + getChecklistProgress()) / 2);
+      window.examStats = stats;
+    }
+
+    function updateSummary() {
+      const summaryBox = document.getElementById("summaryBox");
+      const total = quiz.length;
+      let answered = 0, correct = 0;
+      quiz.forEach(q => {
+        const saved = savedAnswers[q.id];
+        if (saved) { answered++; if (saved.correct) correct++; }
+      });
+      if (answered < total) {
+        summaryBox.innerHTML = `<div class="summary">
+          <p style="color:#9aa4c8;margin:0;">${escapeHtml(loc("sumDone"))} <strong>${answered}</strong> ${escapeHtml(loc("sumOf"))} ${total}</p>
+          <p style="color:#9aa4c8;margin:8px 0 0 0;">${escapeHtml(loc("sumCorr"))} <strong>${correct}</strong></p>
+        </div>`;
+        return;
+      }
+      const percent = Math.round((correct / total) * 100);
+      const verdict = percent >= 85 ? loc("verExc") :
+                      percent >= 60 ? loc("verGood") :
+                      loc("verNeed");
+      const s = window.examStats || { listen: { c: 0, t: 1 }, read: { c: 0, t: 1 }, gram: { c: 0, t: 1 } };
+      const lp = Math.round((s.listen.c / s.listen.t) * 100) || 0;
+      const rp = Math.round((s.read.c / s.read.t) * 100) || 0;
+      const gp = Math.round((s.gram.c / s.gram.t) * 100) || 0;
+      const wrongIds = quiz.filter(q => savedAnswers[q.id] && !savedAnswers[q.id].correct).map(q => q.task);
+      summaryBox.innerHTML = `<div class="summary">
+        <div class="score">${correct}/${total}</div>
+        <p style="margin:8px 0;">${verdict}</p>
+        <p style="color:#9aa4c8;margin:0;">Overall: ${percent}%</p>
+        <p style="color:#dbe3ff;margin:10px 0 0 0;"><strong>Tasks with errors:</strong> ${wrongIds.length ? wrongIds.join(", ") : "none"}</p>
+        <div style="display:flex; justify-content:center; gap:20px; margin-top:16px; font-size:14px; color:#dbe3ff; flex-wrap:wrap;">
+          <span>🎧 Listening: <strong>${lp}%</strong></span>
+          <span>📖 Reading: <strong>${rp}%</strong></span>
+          <span>✍️ Grammar: <strong>${gp}%</strong></span>
+        </div>
+      </div>`;
+    }
+
+    /* =========================================================
+       DRAFTS
+       ========================================================= */
+    function updateWordCounter(ta) {
+      const val = ta.value;
+      manualNotes[ta.dataset.task] = val;
+      const counterEl = document.getElementById("counter-" + ta.dataset.task);
+      const hasNorm = ta.dataset.min || ta.dataset.max;
+      if (!hasNorm) { if (counterEl) counterEl.innerHTML = ""; return; }
+      const words = val.trim() ? val.trim().split(/\s+/).filter(Boolean).length : 0;
+      const min = Number(ta.dataset.min) || 0;
+      const max = Number(ta.dataset.max) || 9999;
+      let color = "var(--muted)";
+      if (words < min) color = "var(--red)";
+      else if (words > max) color = "var(--orange)";
+      else color = "var(--green)";
+      if (counterEl) counterEl.innerHTML = `Words: <strong style="color:${color}">${words}</strong> (limit: ${min}–${max})`;
+    }
+
+    /* =========================================================
+       RESET
+       ========================================================= */
+    function resetAll() {
+      if (!confirm(loc("confReset"))) return;
+      savedAnswers = {}; manualNotes = {};
+      stopSpeech(); stopWritten(); stopOral(); clearOralTimer();
+      writtenAudioOK = false; oralAudioOK = false;
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      timeLeft = EXAM_MINUTES * 60;
+      timerRemaining = timeLeft;
+      updateTimerDisplay();
+      document.getElementById("examTimer").style.color = "var(--accent)";
+      currentFilter = "all";
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      const allBtn = document.getElementById("filterAll");
+      if (allBtn) allBtn.classList.add("active");
+      document.querySelectorAll(".draft-area").forEach(ta => { ta.value = ""; updateWordCounter(ta); });
+      document.querySelectorAll("#checklistUl input").forEach(i => {
+        i.checked = false;
+        i.closest(".check-item").classList.remove("done");
+      });
+      renderAllQuestions();
+      const main = getWrittenAudio(); if (main) main.load();
+      const oral = getOralAudio(); if (oral) oral.load();
+      updateStats(); updateSummary();
+    }
+
+    /* =========================================================
+       COPY PHONE
+       ========================================================= */
+    function copyPhone() {
+      const phone = "89202275676";
+      const status = document.getElementById("copyStatus");
+      const show = () => { status.textContent = loc("copied"); setTimeout(() => { status.textContent = ""; }, 2500); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(phone).then(show).catch(() => fallbackCopy(phone, show));
+      } else fallbackCopy(phone, show);
+    }
+
+    function fallbackCopy(text, cb) {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand("copy"); cb(); } catch (e) { alert(loc("errCopy") + text); }
+      document.body.removeChild(ta);
+    }
+
+    /* =========================================================
+       CHECKLIST AND PLAN DATA
+       ========================================================= */
+    const checklistItemsData = [
+      { key: "ch1", labelEn: "Reviewed tenses: Present Simple / Continuous / Perfect, Past Simple / Continuous / Perfect", labelRu: "Повторил времена: Present Simple / Continuous / Perfect, Past Simple / Continuous / Perfect" },
+      { key: "ch2", labelEn: "Practiced Conditionals I / II / III and wish", labelRu: "Отработал Conditionals I / II / III и wish" },
+      { key: "ch3", labelEn: "Reviewed Passive Voice", labelRu: "Повторил Passive Voice" },
+      { key: "ch4", labelEn: "Practiced Reported Speech", labelRu: "Отработал Reported Speech" },
+      { key: "ch5", labelEn: "Reviewed modal verbs: can / may / must / should", labelRu: "Повторил модальные глаголы: can / may / must / should" },
+      { key: "ch6", labelEn: "Practiced articles, pronouns, prepositions", labelRu: "Отработал артикли, местоимения, предлоги" },
+      { key: "ch7", labelEn: "Reviewed word formation: -ment, -ness, -tion, -ity, -ful, -less, -able", labelRu: "Повторил словообразование: -ment, -ness, -tion, -ity, -ful, -less, -able" },
+      { key: "ch8", labelEn: "Practiced listening: 6 statements", labelRu: "Отработал аудирование: 6 высказываний" },
+      { key: "ch9", labelEn: "Practiced listening: dialogue True / False / Not stated", labelRu: "Отработал аудирование: диалог True / False / Not stated" },
+      { key: "ch10", labelEn: "Practiced listening: interview", labelRu: "Отработал аудирование: интервью" },
+      { key: "ch11", labelEn: "Reviewed reading: matching texts and headings", labelRu: "Повторил чтение: соответствие текстов и заголовков" },
+      { key: "ch12", labelEn: "Practiced reading with gaps A–F", labelRu: "Отработал чтение с пропусками A–F" },
+      { key: "ch13", labelEn: "Checked understanding of \"Living in a dorm\" text", labelRu: "Проверил понимание текста «Living in a dorm»" },
+      { key: "ch14", labelEn: "Practiced grammar: China tea ceremony, tasks 19–24", labelRu: "Отработал грамматику: China tea ceremony, задания 19–24" },
+      { key: "ch15", labelEn: "Practiced word formation: Moscow State University, tasks 25–29", labelRu: "Отработал словообразование: Moscow State University, задания 25–29" },
+      { key: "ch16", labelEn: "Practiced vocabulary in text: Henry, tasks 30–36", labelRu: "Отработал лексику в тексте: Henry, задания 30–36" },
+      { key: "ch17", labelEn: "Wrote email 37", labelRu: "Написал email 37" },
+      { key: "ch18", labelEn: "Checked email length 100–140 words", labelRu: "Проверил объём письма 100–140 слов" },
+      { key: "ch19", labelEn: "Wrote statement 38.1 or 38.2", labelRu: "Написал высказывание 38.1 или 38.2" },
+      { key: "ch20", labelEn: "Checked statement length 200–250 words", labelRu: "Проверил объём высказывания 200–250 слов" },
+      { key: "ch21", labelEn: "Practiced reading aloud (Acid rain)", labelRu: "Отработал чтение вслух (Acid rain)" },
+      { key: "ch22", labelEn: "Practiced 4 questions based on roller skating club ad", labelRu: "Отработал 4 вопроса по объявлению roller skating club" },
+      { key: "ch23", labelEn: "Practiced interview of 5 questions (audio-en-oral.mp3)", labelRu: "Отработал интервью из 5 вопросов (audio-en-oral.mp3)" },
+      { key: "ch24", labelEn: "Practiced project speech with two photos (Seasons)", labelRu: "Отработал проектную речь по двум фото (Seasons)" }
+    ];
+
+    const planDaysData = [
+      { day: 1, critical: true, en: "Diagnostics: exam structure, weak topics.", ru: "Диагностика: структура экзамена, слабые темы." },
+      { day: 2, critical: false, en: "Phonetics and reading aloud: intonation, stress.", ru: "Фонетика и чтение вслух: интонация, ударение." },
+      { day: 3, critical: false, en: "Articles, nouns, pronouns.", ru: "Артикли, существительные, местоимения." },
+      { day: 4, critical: false, en: "Present Simple / Continuous, Past Simple / Continuous.", ru: "Present Simple / Continuous, Past Simple / Continuous." },
+      { day: 5, critical: false, en: "Present Perfect vs Past Simple.", ru: "Present Perfect vs Past Simple." },
+      { day: 6, critical: false, en: "Conditionals I / II / III, wish.", ru: "Conditionals I / II / III, wish." },
+      { day: 7, critical: false, en: "Passive Voice, Reported Speech.", ru: "Passive Voice, Reported Speech." },
+      { day: 8, critical: false, en: "Modal verbs.", ru: "Модальные глаголы." },
+      { day: 9, critical: false, en: "Phrasal verbs and prepositions.", ru: "Фразовые глаголы и предлоги." },
+      { day: 10, critical: false, en: "Word formation: nouns.", ru: "Словообразование: существительные." },
+      { day: 11, critical: false, en: "Word formation: adjectives and adverbs.", ru: "Словообразование: прилагательные и наречия." },
+      { day: 12, critical: false, en: "Vocabulary: family, home, school, work.", ru: "Лексика: семья, дом, школа, работа." },
+      { day: 13, critical: false, en: "Vocabulary: city, transport, travel.", ru: "Лексика: город, транспорт, путешествия." },
+      { day: 14, critical: false, en: "Vocabulary: culture, art, history.", ru: "Лексика: культура, искусство, история." },
+      { day: 15, critical: true, en: "Listening: 6 statements.", ru: "Аудирование: 6 высказываний." },
+      { day: 16, critical: true, en: "Listening: dialogue True / False / Not stated.", ru: "Аудирование: диалог True / False / Not stated." },
+      { day: 17, critical: true, en: "Listening: interview.", ru: "Аудирование: интервью." },
+      { day: 18, critical: true, en: "Reading: matching texts and headings.", ru: "Чтение: соответствие текстов и заголовков." },
+      { day: 19, critical: true, en: "Reading: gaps A–F (Babies / lip-reading).", ru: "Чтение: пропуски A–F (Babies / lip-reading)." },
+      { day: 20, critical: true, en: "Reading: text comprehension 12–18 (Living in a dorm).", ru: "Чтение: понимание текста 12–18 (Living in a dorm)." },
+      { day: 21, critical: true, en: "Grammar and vocabulary: China tea ceremony, MSU, Henry.", ru: "Грамматика и лексика: China tea ceremony, МГУ, Henry." },
+      { day: 22, critical: true, en: "Writing 37: email.", ru: "Письмо 37: email." },
+      { day: 23, critical: true, en: "Writing 38: statement based on data.", ru: "Письмо 38: высказывание по данным." },
+      { day: 24, critical: false, en: "Speaking part: 4 tasks.", ru: "Устная часть: 4 задания." },
+      { day: 25, critical: false, en: "Final practice test and mistake analysis.", ru: "Финальный пробник и разбор ошибок." }
+    ];
+
+    function renderChecklist() {
+      const ul = document.getElementById("checklistUl");
+      ul.innerHTML = checklistItemsData.map(function (item) {
+        const labelText = currentLang === "ru" ? item.labelRu : item.labelEn;
+        return `
+          <li class="check-item">
+            <input type="checkbox" id="${item.key}" data-key="${item.key}" />
+            <label for="${item.key}">${escapeHtml(labelText)}</label>
+          </li>
+        `;
+      }).join("");
+    }
+
+    function renderPlan() {
+      const L = I18N[currentLang];
+      document.getElementById("planGrid").innerHTML = planDaysData.map(function (d) {
+        const text = currentLang === "ru" ? d.ru : d.en;
+        return `
+          <div class="day ${d.critical ? "critical" : ""}">
+            <b>${escapeHtml(L.dayPrefix)} ${d.day}</b>
+            ${escapeHtml(text)}
+          </div>
+        `;
+      }).join("");
+    }
+
+    function applyUIText() {
+      const L = I18N[currentLang];
+      document.title = L.docTitle;
+      document.documentElement.lang = currentLang;
+
+      const meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute("content", L.metaDesc);
+
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        const key = el.dataset.i18n;
+        if (L[key] != null) el.innerHTML = L[key];
+      });
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      document.querySelectorAll(".lang-option").forEach(function (sp) {
+        sp.classList.toggle("active", sp.dataset.lang === lang);
+      });
+      applyUIText();
+      prepareData();
+      renderChecklist();
+      renderPlan();
+      renderAllQuestions();
+      updateTimerLabels();
+    }
+
+    /* =========================================================
+       INITIALIZATION
+       ========================================================= */
+    document.addEventListener("DOMContentLoaded", () => {
+      localStorage.removeItem(STORAGE.answers);
+      localStorage.removeItem(STORAGE.checklist);
+      localStorage.removeItem(STORAGE.shuffle);
+      localStorage.removeItem(STORAGE.manual);
+
+      savedAnswers = {}; manualNotes = {};
+      
+      refreshVoices();
+      if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = refreshVoices;
+
+      prepareData();
+      applyUIText();
+      renderChecklist();
+      renderPlan();
+      renderAllQuestions();
+      renderLexique(lexiqueDatabase);
+      updateTimerLabels();
+      updateTimerDisplay();
+
+      const oralAudio = document.getElementById("oralAudio");
+      const oralError = document.getElementById("oralAudioError");
+      if (oralAudio) {
+        if (oralAudio.readyState >= 2) { oralAudioOK = true; if (oralError) oralError.style.display = "none"; }
+        oralAudio.addEventListener("canplaythrough", () => { oralAudioOK = true; if (oralError) oralError.style.display = "none"; });
+        oralAudio.addEventListener("loadeddata", () => { oralAudioOK = true; if (oralError) oralError.style.display = "none"; });
+        oralAudio.addEventListener("error", () => { oralAudioOK = false; if (oralError) oralError.style.display = "block"; });
+      }
+
+      document.querySelectorAll(".draft-area").forEach(ta => {
+        ta.addEventListener("input", () => updateWordCounter(ta));
+        updateWordCounter(ta);
+      });
+
+      document.querySelectorAll("#checklistUl input").forEach(input => {
+        input.checked = false;
+        input.addEventListener("change", () => {
+          input.closest(".check-item").classList.toggle("done", input.checked);
+          updateStats();
+        });
+      });
+
+      updateStats();
+
+      document.getElementById("langToggle").addEventListener("click", function () {
+        setLang(currentLang === "en" ? "ru" : "en");
+      });
+
+      document.getElementById("timerToggle").addEventListener("click", toggleTimer);
+      document.getElementById("timerReset").addEventListener("click", resetTimer);
+
+      document.getElementById("timerPreset").addEventListener("change", function (e) {
+        timerTotal = parseInt(e.target.value, 10);
+        resetTimer();
+      });
+    });
+  </script>
+</body>
+</html>
