@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Главная страница тренажера -->
+  <url>
+    <loc>https://ancf-hue.github.io/anti-aI-qwen-academy-english-ege-2026-full-trainer/</loc>
+    <lastmod>2026-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Если у вас есть index.html внутри папки, иногда лучше указывать прямой путь к файлу, 
+       но для GitHub Pages корень папки обычно работает как index.html. 
+       Раскомментируйте строку ниже, если поиск не индексирует корень папки правильно: -->
+  <!--
+  <url>
+    <loc>https://ancf-hue.github.io/anti-aI-qwen-academy-english-ege-2026-full-trainer/index.html</loc>
+    <lastmod>2026-10-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  -->
+
+</urlset>

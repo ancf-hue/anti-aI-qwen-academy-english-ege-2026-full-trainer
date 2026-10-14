@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Указываем путь к sitemap.xml относительно корня домена github.io
+Sitemap: https://ancf-hue.github.io/anti-aI-qwen-academy-english-ege-2026-full-trainer/sitemap.xml
+
+# Запрет на сканирование технических файлов (если они случайно попадут в репо)
+Disallow: /*.json$
+Disallow: /*.md$
+Disallow: /.git/
